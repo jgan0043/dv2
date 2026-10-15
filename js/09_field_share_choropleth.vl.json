@@ -1,0 +1,423 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Chart 9 (choropleth map). Share of students in a chosen broad field at universities and other higher education providers based in each state, 2024. Source: Department of Education, Higher Education Statistics 2024, Section 2 All Students, Table 2.10 (multi-state providers excluded). Boundaries: ABS ASGS states, simplified.",
+  "title": {
+    "text": "Share of Students in Each Field, by State",
+    "subtitle": [
+      "Share of students at universities based in each state who study the chosen field, 2024",
+      "Use the menu below the map to choose a field"
+    ]
+  },
+  "width": 440,
+  "height": 380,
+  "projection": {
+    "type": "conicEqualArea",
+    "parallels": [
+      -18,
+      -36
+    ],
+    "rotate": [
+      -134,
+      0
+    ]
+  },
+  "params": [
+    {
+      "name": "chosen",
+      "value": "Health",
+      "bind": {
+        "input": "select",
+        "options": [
+          "Business",
+          "Society & Culture",
+          "Health",
+          "IT",
+          "Education",
+          "Science",
+          "Engineering",
+          "Creative Arts",
+          "Architecture",
+          "Agriculture"
+        ],
+        "name": "Field of study: "
+      }
+    }
+  ],
+  "data": {
+    "url": "data/2-10_students_by_university_and_field.csv"
+  },
+  "transform": [
+    {
+      "filter": "indexof(['Total', 'Total 2023', '% change on 2023', 'Multi-State'], datum.State) < 0"
+    },
+    {
+      "fold": [
+        "Management and Commerce",
+        "Society and Culture",
+        "Health",
+        "Information Technology",
+        "Education",
+        "Natural and Physical Sciences",
+        "Engineering and Related Technologies",
+        "Creative Arts",
+        "Architecture and Building",
+        "Agriculture, Environmental and Related Studies"
+      ],
+      "as": [
+        "official",
+        "n"
+      ]
+    },
+    {
+      "calculate": "isValid(toNumber(datum.n)) ? toNumber(datum.n) : 0",
+      "as": "n"
+    },
+    {
+      "lookup": "official",
+      "from": {
+        "data": {
+          "values": [
+            {
+              "official": "Management and Commerce",
+              "field": "Business"
+            },
+            {
+              "official": "Society and Culture",
+              "field": "Society & Culture"
+            },
+            {
+              "official": "Health",
+              "field": "Health"
+            },
+            {
+              "official": "Information Technology",
+              "field": "IT"
+            },
+            {
+              "official": "Education",
+              "field": "Education"
+            },
+            {
+              "official": "Natural and Physical Sciences",
+              "field": "Science"
+            },
+            {
+              "official": "Engineering and Related Technologies",
+              "field": "Engineering"
+            },
+            {
+              "official": "Creative Arts",
+              "field": "Creative Arts"
+            },
+            {
+              "official": "Architecture and Building",
+              "field": "Architecture"
+            },
+            {
+              "official": "Agriculture, Environmental and Related Studies",
+              "field": "Agriculture"
+            }
+          ]
+        },
+        "key": "official",
+        "fields": [
+          "field"
+        ]
+      }
+    },
+    {
+      "aggregate": [
+        {
+          "op": "sum",
+          "field": "n",
+          "as": "students"
+        }
+      ],
+      "groupby": [
+        "State",
+        "field"
+      ]
+    },
+    {
+      "joinaggregate": [
+        {
+          "op": "sum",
+          "field": "students",
+          "as": "stateTotal"
+        }
+      ],
+      "groupby": [
+        "State"
+      ]
+    },
+    {
+      "calculate": "datum.students / datum.stateTotal",
+      "as": "share"
+    },
+    {
+      "filter": "datum.field === chosen"
+    },
+    {
+      "joinaggregate": [
+        {
+          "op": "max",
+          "field": "share",
+          "as": "maxShare"
+        }
+      ]
+    },
+    {
+      "lookup": "State",
+      "from": {
+        "data": {
+          "values": [
+            {
+              "State": "New South Wales",
+              "short": "NSW",
+              "lon": 146.8,
+              "lat": -32.2
+            },
+            {
+              "State": "Victoria",
+              "short": "VIC",
+              "lon": 144.0,
+              "lat": -36.9
+            },
+            {
+              "State": "Queensland",
+              "short": "QLD",
+              "lon": 144.5,
+              "lat": -22.5
+            },
+            {
+              "State": "South Australia",
+              "short": "SA",
+              "lon": 135.3,
+              "lat": -29.4
+            },
+            {
+              "State": "Western Australia",
+              "short": "WA",
+              "lon": 121.8,
+              "lat": -25.5
+            },
+            {
+              "State": "Tasmania",
+              "short": "TAS",
+              "lon": 149.4,
+              "lat": -43.4
+            },
+            {
+              "State": "Northern Territory",
+              "short": "NT",
+              "lon": 133.4,
+              "lat": -19.5
+            },
+            {
+              "State": "Australian Capital Territory",
+              "short": "ACT",
+              "lon": 151.2,
+              "lat": -36.9
+            }
+          ]
+        },
+        "key": "State",
+        "fields": [
+          "short",
+          "lon",
+          "lat"
+        ]
+      }
+    },
+    {
+      "lookup": "State",
+      "from": {
+        "data": {
+          "url": "data/australia_states.topo.json",
+          "format": {
+            "type": "topojson",
+            "feature": "states"
+          }
+        },
+        "key": "properties.state"
+      },
+      "as": "geo"
+    }
+  ],
+  "layer": [
+    {
+      "mark": {
+        "type": "geoshape",
+        "stroke": "#fcfcfb",
+        "strokeWidth": 1.5
+      },
+      "encoding": {
+        "shape": {
+          "field": "geo",
+          "type": "geojson"
+        },
+        "color": {
+          "field": "share",
+          "type": "quantitative",
+          "title": "Share of students",
+          "scale": {
+            "range": [
+              "#e3eefc",
+              "#9ec5f4",
+              "#3987e5",
+              "#1c5cab",
+              "#0d366b"
+            ],
+            "zero": true,
+            "interpolate": "lab"
+          },
+          "legend": {
+            "orient": "bottom-left",
+            "format": ".0%",
+            "direction": "horizontal",
+            "gradientLength": 180,
+            "tickCount": 4
+          }
+        },
+        "tooltip": [
+          {
+            "field": "State"
+          },
+          {
+            "field": "field",
+            "title": "Field"
+          },
+          {
+            "field": "students",
+            "type": "quantitative",
+            "title": "Students in this field",
+            "format": ","
+          },
+          {
+            "field": "share",
+            "type": "quantitative",
+            "title": "Share of the state's students",
+            "format": ".1%"
+          }
+        ]
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.short !== 'ACT' && datum.short !== 'TAS'"
+        },
+        {
+          "calculate": "[datum.State, format(datum.share, '.0%')]",
+          "as": "lab"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "fontWeight": 700,
+        "fontSize": 11,
+        "baseline": "middle",
+        "lineHeight": 13
+      },
+      "encoding": {
+        "longitude": {
+          "field": "lon",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "lat",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "lab"
+        },
+        "color": {
+          "condition": {
+            "test": "datum.share > datum.maxShare * 0.62",
+            "value": "#ffffff"
+          },
+          "value": "#0b0b0b"
+        }
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.short === 'ACT' || datum.short === 'TAS'"
+        },
+        {
+          "calculate": "datum.State + ' ' + format(datum.share, '.0%')",
+          "as": "lab"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "fontWeight": 700,
+        "fontSize": 11,
+        "align": "left",
+        "color": "#0b0b0b"
+      },
+      "encoding": {
+        "longitude": {
+          "field": "lon",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "lat",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "lab"
+        }
+      }
+    }
+  ],
+  "config": {
+    "background": "#fcfcfb",
+    "font": "'Source Sans 3', Helvetica, Arial, sans-serif",
+    "padding": 12,
+    "view": {
+      "stroke": null
+    },
+    "title": {
+      "anchor": "start",
+      "fontSize": 19,
+      "fontWeight": 700,
+      "color": "#0b0b0b",
+      "subtitleFontSize": 13,
+      "subtitleColor": "#52514e",
+      "subtitlePadding": 6,
+      "offset": 16
+    },
+    "axis": {
+      "labelColor": "#52514e",
+      "labelFontSize": 12,
+      "titleColor": "#52514e",
+      "titleFontSize": 12,
+      "titleFontWeight": 400,
+      "gridColor": "#e1e0d9",
+      "domainColor": "#c3c2b7",
+      "tickColor": "#c3c2b7"
+    },
+    "legend": {
+      "labelColor": "#52514e",
+      "labelFontSize": 12,
+      "titleColor": "#52514e",
+      "titleFontSize": 12,
+      "titleFontWeight": 600
+    },
+    "header": {
+      "labelColor": "#0b0b0b",
+      "labelFontSize": 13,
+      "labelFontWeight": 600,
+      "titleFontSize": 0
+    },
+    "text": {
+      "fontSize": 12,
+      "color": "#52514e"
+    },
+    "line": {
+      "strokeWidth": 2
+    }
+  }
+}

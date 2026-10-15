@@ -1,0 +1,281 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Chart 4 (line chart, small multiples). Students enrolled in each broad field, 2015-2024, all on the same scale. Source: Department of Education, Higher Education Statistics 2024, Summary Time Series, Table 2.",
+  "title": {
+    "text": "Enrolments by Field, 2015–2024",
+    "subtitle": [
+      "Students enrolled in each field (all students, all levels), with the change from 2015 to 2024",
+      "Every panel uses the same scale; gridlines mark 200k and 400k students"
+    ]
+  },
+  "data": {
+    "url": "data/T2_all_student_enrolments.csv"
+  },
+  "transform": [
+    {
+      "filter": "datum.Group === 'Broad Field of Education'"
+    },
+    {
+      "lookup": "Category",
+      "from": {
+        "data": {
+          "values": [
+            {
+              "official": "Management and Commerce",
+              "field": "Business"
+            },
+            {
+              "official": "Society and Culture",
+              "field": "Society & Culture"
+            },
+            {
+              "official": "Health",
+              "field": "Health"
+            },
+            {
+              "official": "Information Technology",
+              "field": "IT"
+            },
+            {
+              "official": "Education",
+              "field": "Education"
+            },
+            {
+              "official": "Natural and Physical Sciences",
+              "field": "Science"
+            },
+            {
+              "official": "Engineering and Related Technologies",
+              "field": "Engineering"
+            },
+            {
+              "official": "Creative Arts",
+              "field": "Creative Arts"
+            },
+            {
+              "official": "Architecture and Building",
+              "field": "Architecture"
+            },
+            {
+              "official": "Agriculture, Environmental and Related Studies",
+              "field": "Agriculture"
+            }
+          ]
+        },
+        "key": "official",
+        "fields": [
+          "field"
+        ]
+      }
+    },
+    {
+      "filter": "isValid(datum.field)"
+    },
+    {
+      "calculate": "toNumber(datum['2024']) / toNumber(datum['2015']) - 1",
+      "as": "growth"
+    },
+    {
+      "calculate": "toNumber(datum['2024'])",
+      "as": "size"
+    },
+    {
+      "calculate": "datum.field + '|' + format(datum.size, '.3~s') + ' (' + format(datum.growth, abs(datum.growth) < 0.01 ? '+.1%' : '+.0%') + ')'",
+      "as": "panel"
+    },
+    {
+      "fold": [
+        "2015",
+        "2016",
+        "2017",
+        "2018",
+        "2019",
+        "2020",
+        "2021",
+        "2022",
+        "2023",
+        "2024"
+      ],
+      "as": [
+        "year",
+        "students"
+      ]
+    },
+    {
+      "calculate": "toNumber(datum.year)",
+      "as": "year"
+    },
+    {
+      "calculate": "toNumber(datum.students)",
+      "as": "students"
+    }
+  ],
+  "facet": {
+    "field": "panel",
+    "type": "nominal",
+    "title": null,
+    "sort": {
+      "field": "size",
+      "op": "max",
+      "order": "descending"
+    },
+    "header": {
+      "labelAnchor": "start",
+      "labelPadding": 4,
+      "labelFontSize": 12,
+      "labelExpr": "split(datum.value, '|')"
+    }
+  },
+  "columns": 5,
+  "spacing": {
+    "row": 18,
+    "column": 10
+  },
+  "spec": {
+    "width": 104,
+    "height": 70,
+    "encoding": {
+      "x": {
+        "field": "year",
+        "type": "quantitative",
+        "title": null,
+        "scale": {
+          "domain": [
+            2015,
+            2024
+          ]
+        },
+        "axis": {
+          "values": [
+            2015,
+            2024
+          ],
+          "format": "d",
+          "grid": false,
+          "labelFontSize": 10,
+          "labelFlush": true,
+          "ticks": false,
+          "domain": false
+        }
+      },
+      "y": {
+        "field": "students",
+        "type": "quantitative",
+        "title": null,
+        "scale": {
+          "domain": [
+            0,
+            400000
+          ]
+        },
+        "axis": {
+          "values": [
+            0,
+            200000,
+            400000
+          ],
+          "labels": false,
+          "domain": false,
+          "ticks": false
+        }
+      }
+    },
+    "layer": [
+      {
+        "mark": {
+          "type": "area",
+          "color": "#b7d3f6",
+          "opacity": 0.6
+        }
+      },
+      {
+        "mark": {
+          "type": "line",
+          "color": "#2a78d6",
+          "strokeWidth": 2
+        }
+      },
+      {
+        "mark": {
+          "type": "circle",
+          "size": 70,
+          "opacity": 0
+        },
+        "encoding": {
+          "tooltip": [
+            {
+              "field": "field",
+              "title": "Field"
+            },
+            {
+              "field": "year",
+              "type": "quantitative",
+              "title": "Year",
+              "format": "d"
+            },
+            {
+              "field": "students",
+              "type": "quantitative",
+              "title": "Students",
+              "format": ","
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "resolve": {
+    "axis": {
+      "x": "independent",
+      "y": "independent"
+    }
+  },
+  "config": {
+    "background": "#fcfcfb",
+    "font": "'Source Sans 3', Helvetica, Arial, sans-serif",
+    "padding": 12,
+    "view": {
+      "stroke": null
+    },
+    "title": {
+      "anchor": "start",
+      "fontSize": 19,
+      "fontWeight": 700,
+      "color": "#0b0b0b",
+      "subtitleFontSize": 13,
+      "subtitleColor": "#52514e",
+      "subtitlePadding": 6,
+      "offset": 16
+    },
+    "axis": {
+      "labelColor": "#52514e",
+      "labelFontSize": 12,
+      "titleColor": "#52514e",
+      "titleFontSize": 12,
+      "titleFontWeight": 400,
+      "gridColor": "#e1e0d9",
+      "domainColor": "#c3c2b7",
+      "tickColor": "#c3c2b7"
+    },
+    "legend": {
+      "labelColor": "#52514e",
+      "labelFontSize": 12,
+      "titleColor": "#52514e",
+      "titleFontSize": 12,
+      "titleFontWeight": 600
+    },
+    "header": {
+      "labelColor": "#0b0b0b",
+      "labelFontSize": 13,
+      "labelFontWeight": 600,
+      "titleFontSize": 0
+    },
+    "text": {
+      "fontSize": 12,
+      "color": "#52514e"
+    },
+    "line": {
+      "strokeWidth": 2
+    }
+  }
+}

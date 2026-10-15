@@ -1,0 +1,355 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Chart 5 (bump chart). Rank of each broad field by number of domestic undergraduate applicants, 2010-2025. Source: Department of Education, Undergraduate Applications and Offers 2025 (Appendices), Table A4.1.",
+  "title": {
+    "text": "Rank of Fields Among Applicants, 2010–2025",
+    "subtitle": "#1 = the field with the most domestic undergraduate applicants that year · hover over a line to highlight it"
+  },
+  "width": 390,
+  "height": 330,
+  "data": {
+    "url": "data/A4-1_applications_offers_by_field.csv"
+  },
+  "transform": [
+    {
+      "lookup": "Field of education",
+      "from": {
+        "data": {
+          "values": [
+            {
+              "official": "Management and Commerce",
+              "field": "Business"
+            },
+            {
+              "official": "Society and Culture",
+              "field": "Society & Culture"
+            },
+            {
+              "official": "Health",
+              "field": "Health"
+            },
+            {
+              "official": "Information Technology",
+              "field": "IT"
+            },
+            {
+              "official": "Education",
+              "field": "Education"
+            },
+            {
+              "official": "Natural and Physical Sciences",
+              "field": "Science"
+            },
+            {
+              "official": "Engineering and Related Technologies",
+              "field": "Engineering"
+            },
+            {
+              "official": "Creative Arts",
+              "field": "Creative Arts"
+            },
+            {
+              "official": "Architecture and Building",
+              "field": "Architecture"
+            },
+            {
+              "official": "Agriculture, Environmental and Related Studies",
+              "field": "Agriculture"
+            }
+          ]
+        },
+        "key": "official",
+        "fields": [
+          "field"
+        ]
+      }
+    },
+    {
+      "filter": "isValid(datum.field)"
+    },
+    {
+      "fold": [
+        "Applicants 2010",
+        "Applicants 2011",
+        "Applicants 2012",
+        "Applicants 2013",
+        "Applicants 2014",
+        "Applicants 2015",
+        "Applicants 2016",
+        "Applicants 2017",
+        "Applicants 2018",
+        "Applicants 2019",
+        "Applicants 2020",
+        "Applicants 2021",
+        "Applicants 2022",
+        "Applicants 2023",
+        "Applicants 2024",
+        "Applicants 2025"
+      ],
+      "as": [
+        "column",
+        "applicants"
+      ]
+    },
+    {
+      "calculate": "toNumber(replace(datum.column, 'Applicants ', ''))",
+      "as": "year"
+    },
+    {
+      "calculate": "toNumber(datum.applicants)",
+      "as": "applicants"
+    },
+    {
+      "window": [
+        {
+          "op": "row_number",
+          "as": "rank"
+        }
+      ],
+      "groupby": [
+        "year"
+      ],
+      "sort": [
+        {
+          "field": "applicants",
+          "order": "descending"
+        }
+      ]
+    }
+  ],
+  "encoding": {
+    "x": {
+      "field": "year",
+      "type": "quantitative",
+      "title": null,
+      "scale": {
+        "domain": [
+          2010,
+          2025
+        ]
+      },
+      "axis": {
+        "format": "d",
+        "values": [
+          2010,
+          2014,
+          2018,
+          2022,
+          2025
+        ],
+        "grid": false,
+        "domain": false
+      }
+    },
+    "y": {
+      "field": "rank",
+      "type": "quantitative",
+      "title": null,
+      "axis": null,
+      "scale": {
+        "domain": [
+          0.6,
+          10.2
+        ],
+        "reverse": true
+      }
+    },
+    "opacity": {
+      "condition": {
+        "param": "hover",
+        "value": 1
+      },
+      "value": 0.18
+    }
+  },
+  "layer": [
+    {
+      "mark": {
+        "type": "line",
+        "interpolate": "monotone",
+        "strokeWidth": 2.5,
+        "color": "#2a78d6"
+      },
+      "encoding": {
+        "detail": {
+          "field": "field"
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "circle",
+        "size": 34,
+        "color": "#2a78d6",
+        "stroke": "#fcfcfb",
+        "strokeWidth": 1
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.year === 2010"
+        },
+        {
+          "calculate": "'#' + datum.rank + '  ' + datum.field",
+          "as": "lab"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "right",
+        "dx": -9,
+        "color": "#0b0b0b"
+      },
+      "encoding": {
+        "text": {
+          "field": "lab"
+        }
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.year === 2025"
+        },
+        {
+          "calculate": "'#' + datum.rank + '  ' + datum.field",
+          "as": "lab"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "dx": 9,
+        "color": "#0b0b0b"
+      },
+      "encoding": {
+        "text": {
+          "field": "lab"
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "circle",
+        "size": 160,
+        "opacity": 0
+      },
+      "params": [
+        {
+          "name": "hover",
+          "select": {
+            "type": "point",
+            "fields": [
+              "field"
+            ],
+            "on": "pointerover",
+            "clear": "pointerout",
+            "nearest": true
+          }
+        }
+      ],
+      "encoding": {
+        "opacity": {
+          "value": 0
+        },
+        "tooltip": [
+          {
+            "field": "field",
+            "title": "Field"
+          },
+          {
+            "field": "year",
+            "type": "quantitative",
+            "title": "Year",
+            "format": "d"
+          },
+          {
+            "field": "rank",
+            "type": "quantitative",
+            "title": "Rank"
+          },
+          {
+            "field": "applicants",
+            "type": "quantitative",
+            "title": "Applicants",
+            "format": ","
+          }
+        ]
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "year": 2014,
+            "rank": 1,
+            "t": "Health becomes #1 (2014)"
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "dy": -14,
+        "fontStyle": "italic",
+        "color": "#52514e"
+      },
+      "encoding": {
+        "text": {
+          "field": "t"
+        },
+        "opacity": {
+          "value": 1
+        }
+      }
+    }
+  ],
+  "config": {
+    "background": "#fcfcfb",
+    "font": "'Source Sans 3', Helvetica, Arial, sans-serif",
+    "padding": 12,
+    "view": {
+      "stroke": null
+    },
+    "title": {
+      "anchor": "start",
+      "fontSize": 19,
+      "fontWeight": 700,
+      "color": "#0b0b0b",
+      "subtitleFontSize": 13,
+      "subtitleColor": "#52514e",
+      "subtitlePadding": 6,
+      "offset": 16
+    },
+    "axis": {
+      "labelColor": "#52514e",
+      "labelFontSize": 12,
+      "titleColor": "#52514e",
+      "titleFontSize": 12,
+      "titleFontWeight": 400,
+      "gridColor": "#e1e0d9",
+      "domainColor": "#c3c2b7",
+      "tickColor": "#c3c2b7"
+    },
+    "legend": {
+      "labelColor": "#52514e",
+      "labelFontSize": 12,
+      "titleColor": "#52514e",
+      "titleFontSize": 12,
+      "titleFontWeight": 600
+    },
+    "header": {
+      "labelColor": "#0b0b0b",
+      "labelFontSize": 13,
+      "labelFontWeight": 600,
+      "titleFontSize": 0
+    },
+    "text": {
+      "fontSize": 12,
+      "color": "#52514e"
+    },
+    "line": {
+      "strokeWidth": 2
+    }
+  }
+}

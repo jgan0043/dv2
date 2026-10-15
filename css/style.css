@@ -1,0 +1,214 @@
+/* ==========================================================================
+   Changing Course — FIT3179 Data Visualisation 2
+   Layout: 12-column grid, max width 1120px. Every chart row = narrative (4 cols)
+   + chart (8 cols), so text and charts share the same two vertical sight lines.
+   ========================================================================== */
+
+:root {
+  /* surfaces & ink (same values as the Vega-Lite config in every chart) */
+  --page: #fcfcfb;
+  --panel: #f4f3ef;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #898781;
+  --rule: #e1e0d9;
+
+  /* link colour (same blue as Health in the charts) */
+  --health: #2a78d6;
+
+  /* typography */
+  --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --sans: "Source Sans 3", Helvetica, Arial, sans-serif;
+
+  /* spacing scale */
+  --s1: 8px;
+  --s2: 16px;
+  --s3: 24px;
+  --s4: 40px;
+  --s5: 64px;
+  --s6: 96px;
+
+  --max: 1120px;
+  --gap: 40px;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+a { color: var(--health); text-underline-offset: 2px; }
+
+.wrap {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 var(--s3);
+}
+
+/* ---------- header ---------- */
+.masthead {
+  border-bottom: 1px solid var(--rule);
+  padding: var(--s6) 0 var(--s5);
+}
+
+.kicker {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  margin: 0 0 var(--s2);
+}
+
+h1 {
+  font-family: var(--serif);
+  font-size: clamp(40px, 5vw, 60px);
+  line-height: 1.08;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0 0 var(--s3);
+  max-width: 16ch;
+}
+
+.standfirst {
+  font-family: var(--serif);
+  font-size: 23px;
+  line-height: 1.45;
+  color: var(--ink-2);
+  max-width: 40em;
+  margin: 0 0 var(--s3);
+}
+
+.byline {
+  font-size: 15px;
+  color: var(--ink-2);
+  margin: 0;
+}
+
+.intro {
+  max-width: 40em;
+  padding: var(--s4) 0 0;
+}
+
+.intro p { margin: 0 0 var(--s2); }
+
+/* ---------- sections ---------- */
+.section { padding: var(--s6) 0 var(--s2); }
+
+.section-head {
+  max-width: 44em;
+  margin-bottom: var(--s5);
+}
+
+.section-num {
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: var(--s1);
+}
+
+h2 {
+  font-family: var(--serif);
+  font-size: 38px;
+  line-height: 1.15;
+  font-weight: 700;
+  margin: 0 0 var(--s2);
+}
+
+.section-head p {
+  font-size: 20px;
+  line-height: 1.55;
+  color: var(--ink-2);
+  margin: 0;
+}
+
+/* chart row: narrative left (4/12), chart right (8/12) */
+.row {
+  display: grid;
+  grid-template-columns: 4fr 8fr;
+  gap: var(--gap);
+  align-items: start;
+  padding: var(--s4) 0;
+  border-top: 1px solid var(--rule);
+}
+
+/* one-sentence explanation beside each chart, aligned with the chart title */
+.note {
+  font-size: 19px;
+  line-height: 1.5;
+  color: var(--ink);
+  margin: 0;
+  padding-top: 12px;
+  max-width: 22em;
+}
+
+.chart { min-width: 0; overflow-x: auto; }
+
+/* Vega-Lite dropdown (flow map) */
+.vega-bind {
+  font-family: var(--sans);
+  font-size: 15px;
+  color: var(--ink-2);
+  margin-top: var(--s1);
+}
+.vega-bind-name { font-weight: 600; margin-right: var(--s1); }
+.vega-bind select {
+  font: inherit;
+  color: var(--ink);
+  padding: 4px 8px;
+  border: 1px solid #c3c2b7;
+  border-radius: 6px;
+  background: #fff;
+}
+
+/* ---------- closing ---------- */
+.closing {
+  margin-top: var(--s5);
+  padding: var(--s5) 0;
+  border-top: 4px solid var(--ink);
+}
+
+.closing p { max-width: 40em; font-size: 20px; line-height: 1.6; }
+
+/* ---------- footer / metadata ---------- */
+.about {
+  background: var(--panel);
+  margin-top: var(--s5);
+  padding: var(--s5) 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 4fr 8fr;
+  gap: var(--gap);
+}
+
+.about h2 { font-size: 26px; color: var(--ink); }
+.about h3 { font-size: 15px; color: var(--ink); margin: var(--s3) 0 var(--s1); text-transform: uppercase; letter-spacing: 0.06em; }
+.about h3:first-child { margin-top: 0; }
+.about ol, .about ul { padding-left: 1.2em; margin: 0; }
+.about li { margin-bottom: var(--s1); }
+.about p { margin: 0 0 var(--s1); }
+
+.glossary { display: grid; grid-template-columns: max-content 1fr; gap: 2px var(--s2); margin: 0; }
+.glossary dt { font-weight: 700; color: var(--ink); }
+.glossary dd { margin: 0; }
+
+/* ---------- small screens: stack text above charts ---------- */
+@media (max-width: 980px) {
+  .row, .about-grid { grid-template-columns: 1fr; gap: var(--s3); }
+}

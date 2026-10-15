@@ -1,0 +1,383 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Chart 3 (spine chart). Share of metropolitan (city) and non-metropolitan (regional) domestic undergraduate applicants choosing each broad field, 2025. Source: Department of Education, Undergraduate Applications and Offers 2025 (Appendices), Table A6.",
+  "title": {
+    "text": "What City and Regional Applicants Choose, 2025",
+    "subtitle": "Share of each group's applicants choosing each field of study"
+  },
+  "width": 440,
+  "height": 330,
+  "data": {
+    "url": "data/A6_applications_offers_by_region_and_field.csv"
+  },
+  "transform": [
+    {
+      "lookup": "Field of education",
+      "from": {
+        "data": {
+          "values": [
+            {
+              "official": "Management and Commerce",
+              "field": "Business"
+            },
+            {
+              "official": "Society and Culture",
+              "field": "Society & Culture"
+            },
+            {
+              "official": "Health",
+              "field": "Health"
+            },
+            {
+              "official": "Information Technology",
+              "field": "IT"
+            },
+            {
+              "official": "Education",
+              "field": "Education"
+            },
+            {
+              "official": "Natural and Physical Sciences",
+              "field": "Science"
+            },
+            {
+              "official": "Engineering and Related Technologies",
+              "field": "Engineering"
+            },
+            {
+              "official": "Creative Arts",
+              "field": "Creative Arts"
+            },
+            {
+              "official": "Architecture and Building",
+              "field": "Architecture"
+            },
+            {
+              "official": "Agriculture, Environmental and Related Studies",
+              "field": "Agriculture"
+            }
+          ]
+        },
+        "key": "official",
+        "fields": [
+          "field"
+        ]
+      }
+    },
+    {
+      "filter": "isValid(datum.field)"
+    },
+    {
+      "calculate": "toNumber(datum['Metropolitan Applicants'])",
+      "as": "city"
+    },
+    {
+      "calculate": "toNumber(datum['Non-Metropolitan Applicants'])",
+      "as": "regional"
+    },
+    {
+      "joinaggregate": [
+        {
+          "op": "sum",
+          "field": "city",
+          "as": "cityTotal"
+        },
+        {
+          "op": "sum",
+          "field": "regional",
+          "as": "regionalTotal"
+        }
+      ]
+    },
+    {
+      "calculate": "datum.city / datum.cityTotal",
+      "as": "City applicants"
+    },
+    {
+      "calculate": "datum.regional / datum.regionalTotal",
+      "as": "Regional applicants"
+    },
+    {
+      "calculate": "datum['City applicants'] + datum['Regional applicants']",
+      "as": "order"
+    },
+    {
+      "fold": [
+        "City applicants",
+        "Regional applicants"
+      ],
+      "as": [
+        "group",
+        "share"
+      ]
+    },
+    {
+      "calculate": "datum.group === 'City applicants' ? -datum.share : datum.share",
+      "as": "x"
+    }
+  ],
+  "encoding": {
+    "y": {
+      "field": "field",
+      "type": "nominal",
+      "title": null,
+      "sort": {
+        "field": "order",
+        "op": "max",
+        "order": "descending"
+      },
+      "axis": {
+        "domain": false,
+        "ticks": false,
+        "labelFontSize": 13,
+        "labelPadding": 8
+      }
+    }
+  },
+  "layer": [
+    {
+      "mark": {
+        "type": "bar",
+        "height": {
+          "band": 0.62
+        },
+        "cornerRadiusEnd": 3
+      },
+      "encoding": {
+        "x": {
+          "field": "x",
+          "type": "quantitative",
+          "title": null,
+          "scale": {
+            "domain": [
+              -0.38,
+              0.38
+            ]
+          },
+          "axis": {
+            "values": [
+              -0.3,
+              -0.2,
+              -0.1,
+              0,
+              0.1,
+              0.2,
+              0.3
+            ],
+            "labelExpr": "format(abs(datum.value), '.0%')",
+            "domain": false,
+            "ticks": false
+          }
+        },
+        "color": {
+          "field": "group",
+          "type": "nominal",
+          "legend": null,
+          "scale": {
+            "domain": [
+              "City applicants",
+              "Regional applicants"
+            ],
+            "range": [
+              "#2a78d6",
+              "#eb6834"
+            ]
+          }
+        },
+        "tooltip": [
+          {
+            "field": "field",
+            "title": "Field"
+          },
+          {
+            "field": "group",
+            "title": "Group"
+          },
+          {
+            "field": "share",
+            "type": "quantitative",
+            "title": "Share of the group's applicants",
+            "format": ".1%"
+          }
+        ]
+      }
+    },
+    {
+      "mark": {
+        "type": "rule",
+        "color": "#52514e",
+        "strokeWidth": 1
+      },
+      "encoding": {
+        "x": {
+          "datum": 0
+        },
+        "y": null
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.group === 'City applicants'"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "right",
+        "dx": -5
+      },
+      "encoding": {
+        "x": {
+          "field": "x",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "share",
+          "type": "quantitative",
+          "format": ".0%"
+        }
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.group === 'Regional applicants'"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "dx": 5
+      },
+      "encoding": {
+        "x": {
+          "field": "x",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "share",
+          "type": "quantitative",
+          "format": ".0%"
+        }
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "x": -0.02,
+            "t": "◀ City applicants",
+            "a": "right"
+          },
+          {
+            "x": 0.02,
+            "t": "Regional applicants ▶",
+            "a": "left"
+          }
+        ]
+      },
+      "layer": [
+        {
+          "transform": [
+            {
+              "filter": "datum.a === 'right'"
+            }
+          ],
+          "mark": {
+            "type": "text",
+            "align": "right",
+            "fontWeight": 700,
+            "color": "#2a78d6",
+            "fontSize": 13
+          },
+          "encoding": {
+            "x": {
+              "field": "x",
+              "type": "quantitative"
+            },
+            "y": {
+              "value": -12
+            },
+            "text": {
+              "field": "t"
+            }
+          }
+        },
+        {
+          "transform": [
+            {
+              "filter": "datum.a === 'left'"
+            }
+          ],
+          "mark": {
+            "type": "text",
+            "align": "left",
+            "fontWeight": 700,
+            "color": "#c2491b",
+            "fontSize": 13
+          },
+          "encoding": {
+            "x": {
+              "field": "x",
+              "type": "quantitative"
+            },
+            "y": {
+              "value": -12
+            },
+            "text": {
+              "field": "t"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "config": {
+    "background": "#fcfcfb",
+    "font": "'Source Sans 3', Helvetica, Arial, sans-serif",
+    "padding": 12,
+    "view": {
+      "stroke": null
+    },
+    "title": {
+      "anchor": "start",
+      "fontSize": 19,
+      "fontWeight": 700,
+      "color": "#0b0b0b",
+      "subtitleFontSize": 13,
+      "subtitleColor": "#52514e",
+      "subtitlePadding": 6,
+      "offset": 16
+    },
+    "axis": {
+      "labelColor": "#52514e",
+      "labelFontSize": 12,
+      "titleColor": "#52514e",
+      "titleFontSize": 12,
+      "titleFontWeight": 400,
+      "gridColor": "#e1e0d9",
+      "domainColor": "#c3c2b7",
+      "tickColor": "#c3c2b7"
+    },
+    "legend": {
+      "labelColor": "#52514e",
+      "labelFontSize": 12,
+      "titleColor": "#52514e",
+      "titleFontSize": 12,
+      "titleFontWeight": 600
+    },
+    "header": {
+      "labelColor": "#0b0b0b",
+      "labelFontSize": 13,
+      "labelFontWeight": 600,
+      "titleFontSize": 0
+    },
+    "text": {
+      "fontSize": 12,
+      "color": "#52514e"
+    },
+    "line": {
+      "strokeWidth": 2
+    }
+  }
+}

@@ -1,0 +1,452 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Chart 10 (Dorling cartogram). Each state and territory is a circle whose area is proportional to the number of students at universities and other providers based there in 2024, placed near its real location; colour shows the state's largest broad field. Source: Department of Education, Higher Education Statistics 2024, Section 2 All Students, Table 2.10 (multi-state providers excluded). Boundaries: ABS ASGS states, simplified.",
+  "title": {
+    "text": "Students and Largest Field in Each State and Territory, 2024",
+    "subtitle": [
+      "Dorling cartogram: each state is a circle sized by its number of students, placed on its location",
+      "Colour = the field with the most students in that state"
+    ]
+  },
+  "width": 500,
+  "height": 430,
+  "projection": {
+    "type": "conicEqualArea",
+    "parallels": [
+      -18,
+      -36
+    ],
+    "rotate": [
+      -134,
+      0
+    ]
+  },
+  "layer": [
+    {
+      "data": {
+        "url": "data/australia_states.topo.json",
+        "format": {
+          "type": "topojson",
+          "feature": "states"
+        }
+      },
+      "mark": {
+        "type": "geoshape",
+        "fill": "#ecebe5",
+        "stroke": "#fcfcfb",
+        "strokeWidth": 1.5
+      }
+    },
+    {
+      "data": {
+        "url": "data/2-10_students_by_university_and_field.csv"
+      },
+      "transform": [
+        {
+          "filter": "indexof(['Total', 'Total 2023', '% change on 2023', 'Multi-State'], datum.State) < 0"
+        },
+        {
+          "calculate": "toNumber(datum['Total(2.01)'])",
+          "as": "total"
+        },
+        {
+          "joinaggregate": [
+            {
+              "op": "sum",
+              "field": "total",
+              "as": "stateStudents"
+            }
+          ],
+          "groupby": [
+            "State"
+          ]
+        },
+        {
+          "fold": [
+            "Management and Commerce",
+            "Society and Culture",
+            "Health",
+            "Information Technology",
+            "Education",
+            "Natural and Physical Sciences",
+            "Engineering and Related Technologies",
+            "Creative Arts",
+            "Architecture and Building",
+            "Agriculture, Environmental and Related Studies"
+          ],
+          "as": [
+            "official",
+            "n"
+          ]
+        },
+        {
+          "calculate": "isValid(toNumber(datum.n)) ? toNumber(datum.n) : 0",
+          "as": "n"
+        },
+        {
+          "lookup": "official",
+          "from": {
+            "data": {
+              "values": [
+                {
+                  "official": "Management and Commerce",
+                  "field": "Business"
+                },
+                {
+                  "official": "Society and Culture",
+                  "field": "Society & Culture"
+                },
+                {
+                  "official": "Health",
+                  "field": "Health"
+                },
+                {
+                  "official": "Information Technology",
+                  "field": "IT"
+                },
+                {
+                  "official": "Education",
+                  "field": "Education"
+                },
+                {
+                  "official": "Natural and Physical Sciences",
+                  "field": "Science"
+                },
+                {
+                  "official": "Engineering and Related Technologies",
+                  "field": "Engineering"
+                },
+                {
+                  "official": "Creative Arts",
+                  "field": "Creative Arts"
+                },
+                {
+                  "official": "Architecture and Building",
+                  "field": "Architecture"
+                },
+                {
+                  "official": "Agriculture, Environmental and Related Studies",
+                  "field": "Agriculture"
+                }
+              ]
+            },
+            "key": "official",
+            "fields": [
+              "field"
+            ]
+          }
+        },
+        {
+          "aggregate": [
+            {
+              "op": "sum",
+              "field": "n",
+              "as": "fieldStudents"
+            }
+          ],
+          "groupby": [
+            "State",
+            "field",
+            "stateStudents"
+          ]
+        },
+        {
+          "joinaggregate": [
+            {
+              "op": "sum",
+              "field": "fieldStudents",
+              "as": "fieldSum"
+            }
+          ],
+          "groupby": [
+            "State"
+          ]
+        },
+        {
+          "calculate": "datum.fieldStudents / datum.fieldSum",
+          "as": "share"
+        },
+        {
+          "window": [
+            {
+              "op": "row_number",
+              "as": "rank"
+            }
+          ],
+          "groupby": [
+            "State"
+          ],
+          "sort": [
+            {
+              "field": "share",
+              "order": "descending"
+            }
+          ]
+        },
+        {
+          "filter": "datum.rank === 1"
+        },
+        {
+          "lookup": "State",
+          "from": {
+            "data": {
+              "values": [
+                {
+                  "State": "Western Australia",
+                  "clon": 122.0,
+                  "clat": -26.0,
+                  "side": "right"
+                },
+                {
+                  "State": "Northern Territory",
+                  "clon": 133.4,
+                  "clat": -19.4,
+                  "side": "right"
+                },
+                {
+                  "State": "South Australia",
+                  "clon": 135.0,
+                  "clat": -30.2,
+                  "side": "left"
+                },
+                {
+                  "State": "Queensland",
+                  "clon": 144.5,
+                  "clat": -22.6,
+                  "side": "right"
+                },
+                {
+                  "State": "New South Wales",
+                  "clon": 147.2,
+                  "clat": -31.6,
+                  "side": "inside"
+                },
+                {
+                  "State": "Victoria",
+                  "clon": 143.8,
+                  "clat": -37.6,
+                  "side": "inside"
+                },
+                {
+                  "State": "Tasmania",
+                  "clon": 146.6,
+                  "clat": -42.0,
+                  "side": "right"
+                },
+                {
+                  "State": "Australian Capital Territory",
+                  "clon": 149.6,
+                  "clat": -35.8,
+                  "side": "right"
+                }
+              ]
+            },
+            "key": "State",
+            "fields": [
+              "clon",
+              "clat",
+              "side"
+            ]
+          }
+        },
+        {
+          "calculate": "[datum.State, format(datum.stateStudents, '.3~s') + ' students']",
+          "as": "lab"
+        }
+      ],
+      "encoding": {
+        "longitude": {
+          "field": "clon",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "clat",
+          "type": "quantitative"
+        }
+      },
+      "layer": [
+        {
+          "mark": {
+            "type": "circle",
+            "opacity": 0.9,
+            "stroke": "#fcfcfb",
+            "strokeWidth": 1.5
+          },
+          "encoding": {
+            "size": {
+              "field": "stateStudents",
+              "type": "quantitative",
+              "legend": null,
+              "scale": {
+                "type": "linear",
+                "domain": [
+                  0,
+                  545124
+                ],
+                "range": [
+                  0,
+                  5027
+                ]
+              }
+            },
+            "color": {
+              "field": "field",
+              "type": "nominal",
+              "title": "Largest field",
+              "scale": {
+                "domain": [
+                  "Health",
+                  "Business",
+                  "Society & Culture"
+                ],
+                "range": [
+                  "#2a78d6",
+                  "#eb6834",
+                  "#1baf7a"
+                ]
+              },
+              "legend": {
+                "orient": "bottom-left",
+                "symbolType": "circle",
+                "symbolSize": 140
+              }
+            },
+            "tooltip": [
+              {
+                "field": "State"
+              },
+              {
+                "field": "stateStudents",
+                "type": "quantitative",
+                "title": "Students (2024)",
+                "format": ","
+              },
+              {
+                "field": "field",
+                "title": "Largest field"
+              },
+              {
+                "field": "share",
+                "type": "quantitative",
+                "title": "Share in largest field",
+                "format": ".0%"
+              }
+            ]
+          }
+        },
+        {
+          "transform": [
+            {
+              "filter": "datum.side === 'inside'"
+            }
+          ],
+          "mark": {
+            "type": "text",
+            "fontSize": 11,
+            "fontWeight": 700,
+            "lineHeight": 13,
+            "baseline": "middle",
+            "color": "#0b0b0b"
+          },
+          "encoding": {
+            "text": {
+              "field": "lab"
+            }
+          }
+        },
+        {
+          "transform": [
+            {
+              "filter": "datum.side === 'right'"
+            }
+          ],
+          "mark": {
+            "type": "text",
+            "fontSize": 11,
+            "fontWeight": 700,
+            "lineHeight": 13,
+            "baseline": "middle",
+            "align": "left",
+            "dx": 31,
+            "color": "#0b0b0b"
+          },
+          "encoding": {
+            "text": {
+              "field": "lab"
+            }
+          }
+        },
+        {
+          "transform": [
+            {
+              "filter": "datum.side === 'left'"
+            }
+          ],
+          "mark": {
+            "type": "text",
+            "fontSize": 11,
+            "fontWeight": 700,
+            "lineHeight": 13,
+            "baseline": "middle",
+            "align": "right",
+            "dx": -24,
+            "color": "#0b0b0b"
+          },
+          "encoding": {
+            "text": {
+              "field": "lab"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "config": {
+    "background": "#fcfcfb",
+    "font": "'Source Sans 3', Helvetica, Arial, sans-serif",
+    "padding": 12,
+    "view": {
+      "stroke": null
+    },
+    "title": {
+      "anchor": "start",
+      "fontSize": 19,
+      "fontWeight": 700,
+      "color": "#0b0b0b",
+      "subtitleFontSize": 13,
+      "subtitleColor": "#52514e",
+      "subtitlePadding": 6,
+      "offset": 16
+    },
+    "axis": {
+      "labelColor": "#52514e",
+      "labelFontSize": 12,
+      "titleColor": "#52514e",
+      "titleFontSize": 12,
+      "titleFontWeight": 400,
+      "gridColor": "#e1e0d9",
+      "domainColor": "#c3c2b7",
+      "tickColor": "#c3c2b7"
+    },
+    "legend": {
+      "labelColor": "#52514e",
+      "labelFontSize": 12,
+      "titleColor": "#52514e",
+      "titleFontSize": 12,
+      "titleFontWeight": 600
+    },
+    "header": {
+      "labelColor": "#0b0b0b",
+      "labelFontSize": 13,
+      "labelFontWeight": 600,
+      "titleFontSize": 0
+    },
+    "text": {
+      "fontSize": 12,
+      "color": "#52514e"
+    },
+    "line": {
+      "strokeWidth": 2
+    }
+  }
+}

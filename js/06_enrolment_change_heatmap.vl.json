@@ -1,0 +1,360 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Chart 6 (heat map). Year-on-year % change in students enrolled in each broad field, 2016-2024. Source: Department of Education, Higher Education Statistics 2024, Summary Time Series, Table 2.",
+  "title": {
+    "text": "Year-on-Year Change in Enrolments by Field",
+    "subtitle": "Change in students compared with the previous year, all students, 2016–2024"
+  },
+  "width": 468,
+  "height": 330,
+  "data": {
+    "url": "data/T2_all_student_enrolments.csv"
+  },
+  "transform": [
+    {
+      "filter": "datum.Group === 'Broad Field of Education'"
+    },
+    {
+      "lookup": "Category",
+      "from": {
+        "data": {
+          "values": [
+            {
+              "official": "Management and Commerce",
+              "field": "Business"
+            },
+            {
+              "official": "Society and Culture",
+              "field": "Society & Culture"
+            },
+            {
+              "official": "Health",
+              "field": "Health"
+            },
+            {
+              "official": "Information Technology",
+              "field": "IT"
+            },
+            {
+              "official": "Education",
+              "field": "Education"
+            },
+            {
+              "official": "Natural and Physical Sciences",
+              "field": "Science"
+            },
+            {
+              "official": "Engineering and Related Technologies",
+              "field": "Engineering"
+            },
+            {
+              "official": "Creative Arts",
+              "field": "Creative Arts"
+            },
+            {
+              "official": "Architecture and Building",
+              "field": "Architecture"
+            },
+            {
+              "official": "Agriculture, Environmental and Related Studies",
+              "field": "Agriculture"
+            }
+          ]
+        },
+        "key": "official",
+        "fields": [
+          "field"
+        ]
+      }
+    },
+    {
+      "filter": "isValid(datum.field)"
+    },
+    {
+      "calculate": "toNumber(datum['2024'])",
+      "as": "size"
+    },
+    {
+      "fold": [
+        "2015",
+        "2016",
+        "2017",
+        "2018",
+        "2019",
+        "2020",
+        "2021",
+        "2022",
+        "2023",
+        "2024"
+      ],
+      "as": [
+        "year",
+        "students"
+      ]
+    },
+    {
+      "calculate": "toNumber(datum.year)",
+      "as": "year"
+    },
+    {
+      "calculate": "toNumber(datum.students)",
+      "as": "students"
+    },
+    {
+      "window": [
+        {
+          "op": "lag",
+          "field": "students",
+          "as": "previous"
+        }
+      ],
+      "groupby": [
+        "field"
+      ],
+      "sort": [
+        {
+          "field": "year"
+        }
+      ]
+    },
+    {
+      "filter": "datum.year >= 2016"
+    },
+    {
+      "calculate": "datum.students / datum.previous - 1",
+      "as": "change"
+    }
+  ],
+  "encoding": {
+    "x": {
+      "field": "year",
+      "type": "ordinal",
+      "title": null,
+      "axis": {
+        "orient": "top",
+        "domain": false,
+        "ticks": false,
+        "labelPadding": 6,
+        "labelAngle": 0
+      }
+    },
+    "y": {
+      "field": "field",
+      "type": "nominal",
+      "title": null,
+      "sort": {
+        "field": "size",
+        "op": "max",
+        "order": "descending"
+      },
+      "axis": {
+        "domain": false,
+        "ticks": false,
+        "labelPadding": 8,
+        "labelFontSize": 13
+      }
+    }
+  },
+  "layer": [
+    {
+      "mark": {
+        "type": "rect",
+        "cornerRadius": 2,
+        "stroke": "#fcfcfb",
+        "strokeWidth": 2
+      },
+      "encoding": {
+        "color": {
+          "field": "change",
+          "type": "quantitative",
+          "title": "Change on previous year",
+          "scale": {
+            "type": "linear",
+            "domain": [
+              -0.2,
+              -0.1,
+              0,
+              0.1,
+              0.2
+            ],
+            "range": [
+              "#c63c3c",
+              "#ee9b93",
+              "#f0efec",
+              "#b3aaee",
+              "#4a3aa7"
+            ],
+            "clamp": true,
+            "interpolate": "lab"
+          },
+          "legend": {
+            "orient": "bottom",
+            "format": "+.0%",
+            "gradientLength": 260,
+            "values": [
+              -0.2,
+              -0.1,
+              0,
+              0.1,
+              0.2
+            ],
+            "titleOrient": "left",
+            "titleBaseline": "middle"
+          }
+        },
+        "tooltip": [
+          {
+            "field": "field",
+            "title": "Field"
+          },
+          {
+            "field": "year",
+            "title": "Year"
+          },
+          {
+            "field": "students",
+            "type": "quantitative",
+            "title": "Students",
+            "format": ","
+          },
+          {
+            "field": "change",
+            "type": "quantitative",
+            "title": "Change on previous year",
+            "format": "+.1%"
+          }
+        ]
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "abs(datum.change) >= 0.1"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "fontSize": 11,
+        "fontWeight": 600
+      },
+      "encoding": {
+        "text": {
+          "field": "change",
+          "type": "quantitative",
+          "format": "+.0%"
+        },
+        "color": {
+          "condition": {
+            "test": "abs(datum.change) >= 0.12",
+            "value": "#ffffff"
+          },
+          "value": "#0b0b0b"
+        }
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "a": 2020,
+            "b": 2022
+          }
+        ]
+      },
+      "mark": {
+        "type": "rule",
+        "color": "#52514e",
+        "strokeWidth": 1.5
+      },
+      "encoding": {
+        "x": {
+          "field": "a",
+          "type": "ordinal",
+          "bandPosition": 0.1
+        },
+        "x2": {
+          "field": "b",
+          "bandPosition": 0.9
+        },
+        "y": {
+          "value": -30
+        }
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "a": 2021,
+            "t": "COVID-19 border closures"
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "y": -35,
+        "baseline": "bottom",
+        "fontWeight": 600,
+        "color": "#52514e"
+      },
+      "encoding": {
+        "x": {
+          "field": "a",
+          "type": "ordinal"
+        },
+        "y": null,
+        "text": {
+          "field": "t"
+        }
+      }
+    }
+  ],
+  "config": {
+    "background": "#fcfcfb",
+    "font": "'Source Sans 3', Helvetica, Arial, sans-serif",
+    "padding": 12,
+    "view": {
+      "stroke": null
+    },
+    "title": {
+      "anchor": "start",
+      "fontSize": 19,
+      "fontWeight": 700,
+      "color": "#0b0b0b",
+      "subtitleFontSize": 13,
+      "subtitleColor": "#52514e",
+      "subtitlePadding": 6,
+      "offset": 16
+    },
+    "axis": {
+      "labelColor": "#52514e",
+      "labelFontSize": 12,
+      "titleColor": "#52514e",
+      "titleFontSize": 12,
+      "titleFontWeight": 400,
+      "gridColor": "#e1e0d9",
+      "domainColor": "#c3c2b7",
+      "tickColor": "#c3c2b7"
+    },
+    "legend": {
+      "labelColor": "#52514e",
+      "labelFontSize": 12,
+      "titleColor": "#52514e",
+      "titleFontSize": 12,
+      "titleFontWeight": 600
+    },
+    "header": {
+      "labelColor": "#0b0b0b",
+      "labelFontSize": 13,
+      "labelFontWeight": 600,
+      "titleFontSize": 0
+    },
+    "text": {
+      "fontSize": 12,
+      "color": "#52514e"
+    },
+    "line": {
+      "strokeWidth": 2
+    }
+  }
+}

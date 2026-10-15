@@ -1,0 +1,269 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Chart 8 (diverging bar chart). % change in domestic undergraduate applicants by broad field, 2010 to 2025. Source: Department of Education, Undergraduate Applications and Offers 2025 (Appendices), Table A4.1.",
+  "title": {
+    "text": "Change in Applicants by Field, 2010–2025",
+    "subtitle": "% change in domestic undergraduate applicants between 2010 and 2025"
+  },
+  "width": 440,
+  "height": 330,
+  "data": {
+    "url": "data/A4-1_applications_offers_by_field.csv"
+  },
+  "transform": [
+    {
+      "lookup": "Field of education",
+      "from": {
+        "data": {
+          "values": [
+            {
+              "official": "Management and Commerce",
+              "field": "Business"
+            },
+            {
+              "official": "Society and Culture",
+              "field": "Society & Culture"
+            },
+            {
+              "official": "Health",
+              "field": "Health"
+            },
+            {
+              "official": "Information Technology",
+              "field": "IT"
+            },
+            {
+              "official": "Education",
+              "field": "Education"
+            },
+            {
+              "official": "Natural and Physical Sciences",
+              "field": "Science"
+            },
+            {
+              "official": "Engineering and Related Technologies",
+              "field": "Engineering"
+            },
+            {
+              "official": "Creative Arts",
+              "field": "Creative Arts"
+            },
+            {
+              "official": "Architecture and Building",
+              "field": "Architecture"
+            },
+            {
+              "official": "Agriculture, Environmental and Related Studies",
+              "field": "Agriculture"
+            }
+          ]
+        },
+        "key": "official",
+        "fields": [
+          "field"
+        ]
+      }
+    },
+    {
+      "filter": "isValid(datum.field)"
+    },
+    {
+      "calculate": "toNumber(datum['Applicants 2010'])",
+      "as": "a2010"
+    },
+    {
+      "calculate": "toNumber(datum['Applicants 2025'])",
+      "as": "a2025"
+    },
+    {
+      "calculate": "datum.a2025 / datum.a2010 - 1",
+      "as": "change"
+    }
+  ],
+  "encoding": {
+    "y": {
+      "field": "field",
+      "type": "nominal",
+      "title": null,
+      "sort": {
+        "field": "change",
+        "op": "max",
+        "order": "descending"
+      },
+      "axis": {
+        "domain": false,
+        "ticks": false,
+        "labelFontSize": 13,
+        "labelPadding": 8
+      }
+    },
+    "x": {
+      "field": "change",
+      "type": "quantitative",
+      "title": null,
+      "scale": {
+        "domain": [
+          -0.5,
+          0.7
+        ]
+      },
+      "axis": {
+        "values": [
+          -0.4,
+          -0.2,
+          0,
+          0.2,
+          0.4,
+          0.6
+        ],
+        "labelExpr": "datum.value === 0 ? '0%' : format(datum.value, '+.0%')",
+        "domain": false,
+        "ticks": false
+      }
+    }
+  },
+  "layer": [
+    {
+      "mark": {
+        "type": "bar",
+        "height": {
+          "band": 0.62
+        },
+        "cornerRadiusEnd": 3
+      },
+      "encoding": {
+        "color": {
+          "condition": {
+            "test": "datum.change >= 0",
+            "value": "#6250d6"
+          },
+          "value": "#e34948"
+        },
+        "tooltip": [
+          {
+            "field": "field",
+            "title": "Field"
+          },
+          {
+            "field": "a2010",
+            "type": "quantitative",
+            "title": "Applicants 2010",
+            "format": ","
+          },
+          {
+            "field": "a2025",
+            "type": "quantitative",
+            "title": "Applicants 2025",
+            "format": ","
+          },
+          {
+            "field": "change",
+            "type": "quantitative",
+            "title": "Change",
+            "format": "+.1%"
+          }
+        ]
+      }
+    },
+    {
+      "mark": {
+        "type": "rule",
+        "color": "#52514e"
+      },
+      "encoding": {
+        "x": {
+          "datum": 0
+        },
+        "y": null
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.change >= 0"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "dx": 5,
+        "color": "#0b0b0b"
+      },
+      "encoding": {
+        "text": {
+          "field": "change",
+          "type": "quantitative",
+          "format": "+.0%"
+        }
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.change < 0"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "right",
+        "dx": -5,
+        "color": "#0b0b0b"
+      },
+      "encoding": {
+        "text": {
+          "field": "change",
+          "type": "quantitative",
+          "format": "+.0%"
+        }
+      }
+    }
+  ],
+  "config": {
+    "background": "#fcfcfb",
+    "font": "'Source Sans 3', Helvetica, Arial, sans-serif",
+    "padding": 12,
+    "view": {
+      "stroke": null
+    },
+    "title": {
+      "anchor": "start",
+      "fontSize": 19,
+      "fontWeight": 700,
+      "color": "#0b0b0b",
+      "subtitleFontSize": 13,
+      "subtitleColor": "#52514e",
+      "subtitlePadding": 6,
+      "offset": 16
+    },
+    "axis": {
+      "labelColor": "#52514e",
+      "labelFontSize": 12,
+      "titleColor": "#52514e",
+      "titleFontSize": 12,
+      "titleFontWeight": 400,
+      "gridColor": "#e1e0d9",
+      "domainColor": "#c3c2b7",
+      "tickColor": "#c3c2b7"
+    },
+    "legend": {
+      "labelColor": "#52514e",
+      "labelFontSize": 12,
+      "titleColor": "#52514e",
+      "titleFontSize": 12,
+      "titleFontWeight": 600
+    },
+    "header": {
+      "labelColor": "#0b0b0b",
+      "labelFontSize": 13,
+      "labelFontWeight": 600,
+      "titleFontSize": 0
+    },
+    "text": {
+      "fontSize": 12,
+      "color": "#52514e"
+    },
+    "line": {
+      "strokeWidth": 2
+    }
+  }
+}

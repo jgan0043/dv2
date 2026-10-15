@@ -1,0 +1,241 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Chart 1 (waffle chart, small multiples). Share of all 2024 university students in each broad field of education. Source: Department of Education, Higher Education Statistics 2024, Summary Time Series, Table 2.",
+  "title": {
+    "text": "Students by Field of Study, 2024",
+    "subtitle": [
+      "Share of all university students, domestic and international, all levels",
+      "Each square = 1% of students"
+    ]
+  },
+  "data": {
+    "url": "data/T2_all_student_enrolments.csv"
+  },
+  "transform": [
+    {
+      "filter": "datum.Group === 'Broad Field of Education'"
+    },
+    {
+      "lookup": "Category",
+      "from": {
+        "data": {
+          "values": [
+            {
+              "official": "Management and Commerce",
+              "field": "Business"
+            },
+            {
+              "official": "Society and Culture",
+              "field": "Society & Culture"
+            },
+            {
+              "official": "Health",
+              "field": "Health"
+            },
+            {
+              "official": "Information Technology",
+              "field": "IT"
+            },
+            {
+              "official": "Education",
+              "field": "Education"
+            },
+            {
+              "official": "Natural and Physical Sciences",
+              "field": "Science"
+            },
+            {
+              "official": "Engineering and Related Technologies",
+              "field": "Engineering"
+            },
+            {
+              "official": "Creative Arts",
+              "field": "Creative Arts"
+            },
+            {
+              "official": "Architecture and Building",
+              "field": "Architecture"
+            },
+            {
+              "official": "Agriculture, Environmental and Related Studies",
+              "field": "Agriculture"
+            }
+          ]
+        },
+        "key": "official",
+        "fields": [
+          "field"
+        ]
+      }
+    },
+    {
+      "filter": "isValid(datum.field)"
+    },
+    {
+      "calculate": "toNumber(datum['2024'])",
+      "as": "students"
+    },
+    {
+      "joinaggregate": [
+        {
+          "op": "sum",
+          "field": "students",
+          "as": "total"
+        }
+      ]
+    },
+    {
+      "calculate": "datum.students / datum.total * 100",
+      "as": "share"
+    },
+    {
+      "calculate": "round(datum.share)",
+      "as": "squares"
+    },
+    {
+      "calculate": "datum.field + '|' + format(datum.share, '.1f') + '%'",
+      "as": "panel"
+    },
+    {
+      "calculate": "sequence(0, 100)",
+      "as": "cell"
+    },
+    {
+      "flatten": [
+        "cell"
+      ]
+    },
+    {
+      "calculate": "datum.cell % 10",
+      "as": "col"
+    },
+    {
+      "calculate": "floor(datum.cell / 10)",
+      "as": "row"
+    },
+    {
+      "calculate": "datum.cell < datum.squares",
+      "as": "filled"
+    }
+  ],
+  "facet": {
+    "field": "panel",
+    "type": "nominal",
+    "title": null,
+    "sort": {
+      "field": "share",
+      "op": "max",
+      "order": "descending"
+    },
+    "header": {
+      "labelAnchor": "start",
+      "labelPadding": 6,
+      "labelExpr": "split(datum.value, '|')"
+    }
+  },
+  "columns": 5,
+  "spacing": {
+    "row": 20,
+    "column": 22
+  },
+  "spec": {
+    "width": 92,
+    "height": 92,
+    "mark": {
+      "type": "rect",
+      "cornerRadius": 1.5
+    },
+    "encoding": {
+      "x": {
+        "field": "col",
+        "type": "ordinal",
+        "axis": null,
+        "scale": {
+          "paddingInner": 0.18
+        }
+      },
+      "y": {
+        "field": "row",
+        "type": "ordinal",
+        "axis": null,
+        "sort": "descending",
+        "scale": {
+          "paddingInner": 0.18
+        }
+      },
+      "color": {
+        "condition": {
+          "test": "datum.filled",
+          "value": "#2a78d6"
+        },
+        "value": "#e7e6e0"
+      },
+      "tooltip": [
+        {
+          "field": "field",
+          "title": "Field"
+        },
+        {
+          "field": "students",
+          "type": "quantitative",
+          "title": "Students (2024)",
+          "format": ","
+        },
+        {
+          "field": "share",
+          "type": "quantitative",
+          "title": "Share of all students (%)",
+          "format": ".1f"
+        }
+      ]
+    }
+  },
+  "config": {
+    "background": "#fcfcfb",
+    "font": "'Source Sans 3', Helvetica, Arial, sans-serif",
+    "padding": 12,
+    "view": {
+      "stroke": null
+    },
+    "title": {
+      "anchor": "start",
+      "fontSize": 19,
+      "fontWeight": 700,
+      "color": "#0b0b0b",
+      "subtitleFontSize": 13,
+      "subtitleColor": "#52514e",
+      "subtitlePadding": 6,
+      "offset": 16
+    },
+    "axis": {
+      "labelColor": "#52514e",
+      "labelFontSize": 12,
+      "titleColor": "#52514e",
+      "titleFontSize": 12,
+      "titleFontWeight": 400,
+      "gridColor": "#e1e0d9",
+      "domainColor": "#c3c2b7",
+      "tickColor": "#c3c2b7"
+    },
+    "legend": {
+      "labelColor": "#52514e",
+      "labelFontSize": 12,
+      "titleColor": "#52514e",
+      "titleFontSize": 12,
+      "titleFontWeight": 600
+    },
+    "header": {
+      "labelColor": "#0b0b0b",
+      "labelFontSize": 13,
+      "labelFontWeight": 600,
+      "titleFontSize": 0
+    },
+    "text": {
+      "fontSize": 12,
+      "color": "#52514e"
+    },
+    "line": {
+      "strokeWidth": 2
+    }
+  }
+}

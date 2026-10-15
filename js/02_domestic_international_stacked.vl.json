@@ -1,0 +1,370 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Chart 2 (proportional stacked bar). 2024 students by broad field: column width = number of students in the field, split into domestic and international students. Source: Department of Education, Higher Education Statistics 2024, Summary Time Series, Tables 2 (all students) and 4 (domestic students).",
+  "title": {
+    "text": "Domestic and International Students by Field, 2024",
+    "subtitle": [
+      "Column width = number of students in the field",
+      "Dark = international students, light = domestic students"
+    ]
+  },
+  "width": 600,
+  "height": 300,
+  "data": {
+    "url": "data/T2_all_student_enrolments.csv"
+  },
+  "transform": [
+    {
+      "filter": "datum.Group === 'Broad Field of Education'"
+    },
+    {
+      "lookup": "Category",
+      "from": {
+        "data": {
+          "values": [
+            {
+              "official": "Management and Commerce",
+              "field": "Business"
+            },
+            {
+              "official": "Society and Culture",
+              "field": "Society & Culture"
+            },
+            {
+              "official": "Health",
+              "field": "Health"
+            },
+            {
+              "official": "Information Technology",
+              "field": "IT"
+            },
+            {
+              "official": "Education",
+              "field": "Education"
+            },
+            {
+              "official": "Natural and Physical Sciences",
+              "field": "Science"
+            },
+            {
+              "official": "Engineering and Related Technologies",
+              "field": "Engineering"
+            },
+            {
+              "official": "Creative Arts",
+              "field": "Creative Arts"
+            },
+            {
+              "official": "Architecture and Building",
+              "field": "Architecture"
+            },
+            {
+              "official": "Agriculture, Environmental and Related Studies",
+              "field": "Agriculture"
+            }
+          ]
+        },
+        "key": "official",
+        "fields": [
+          "field"
+        ]
+      }
+    },
+    {
+      "filter": "isValid(datum.field)"
+    },
+    {
+      "lookup": "Category",
+      "from": {
+        "data": {
+          "url": "data/T4_domestic_student_enrolments.csv"
+        },
+        "key": "Category",
+        "fields": [
+          "2024"
+        ]
+      },
+      "as": [
+        "domestic"
+      ]
+    },
+    {
+      "calculate": "toNumber(datum['2024'])",
+      "as": "total"
+    },
+    {
+      "calculate": "toNumber(datum.domestic)",
+      "as": "domestic"
+    },
+    {
+      "calculate": "datum.total - datum.domestic",
+      "as": "international"
+    },
+    {
+      "calculate": "datum.international / datum.total",
+      "as": "intlShare"
+    },
+    {
+      "joinaggregate": [
+        {
+          "op": "sum",
+          "field": "total",
+          "as": "all"
+        }
+      ]
+    },
+    {
+      "window": [
+        {
+          "op": "sum",
+          "field": "total",
+          "as": "cum"
+        }
+      ],
+      "sort": [
+        {
+          "field": "total",
+          "order": "descending"
+        }
+      ],
+      "frame": [
+        null,
+        0
+      ]
+    },
+    {
+      "calculate": "(datum.cum - datum.total) / datum.all",
+      "as": "x0"
+    },
+    {
+      "calculate": "datum.cum / datum.all",
+      "as": "x1"
+    },
+    {
+      "calculate": "(datum.x0 + datum.x1) / 2",
+      "as": "xm"
+    },
+    {
+      "calculate": "datum.x1 - datum.x0",
+      "as": "w"
+    },
+    {
+      "fold": [
+        "domestic",
+        "international"
+      ],
+      "as": [
+        "group",
+        "students"
+      ]
+    },
+    {
+      "calculate": "datum.group === 'international' ? 1 - datum.intlShare : 0",
+      "as": "y0"
+    },
+    {
+      "calculate": "datum.group === 'international' ? 1 : 1 - datum.intlShare",
+      "as": "y1"
+    },
+    {
+      "calculate": "datum.group === 'international' ? 'International' : 'Domestic'",
+      "as": "group"
+    }
+  ],
+  "encoding": {
+    "x": {
+      "field": "x0",
+      "type": "quantitative",
+      "title": null,
+      "scale": {
+        "domain": [
+          0,
+          1
+        ]
+      },
+      "axis": null
+    },
+    "y": {
+      "field": "y0",
+      "type": "quantitative",
+      "title": null,
+      "scale": {
+        "domain": [
+          0,
+          1
+        ]
+      },
+      "axis": {
+        "format": ".0%",
+        "values": [
+          0,
+          0.25,
+          0.5,
+          0.75,
+          1
+        ],
+        "domain": false,
+        "ticks": false,
+        "grid": false
+      }
+    }
+  },
+  "layer": [
+    {
+      "mark": {
+        "type": "rect",
+        "stroke": "#fcfcfb",
+        "strokeWidth": 2
+      },
+      "encoding": {
+        "x2": {
+          "field": "x1"
+        },
+        "y2": {
+          "field": "y1"
+        },
+        "color": {
+          "field": "group",
+          "type": "nominal",
+          "legend": null,
+          "scale": {
+            "domain": [
+              "International",
+              "Domestic"
+            ],
+            "range": [
+              "#184f95",
+              "#b7d3f6"
+            ]
+          }
+        },
+        "tooltip": [
+          {
+            "field": "field",
+            "title": "Field"
+          },
+          {
+            "field": "group",
+            "title": "Students"
+          },
+          {
+            "field": "students",
+            "type": "quantitative",
+            "title": "Number",
+            "format": ","
+          },
+          {
+            "field": "intlShare",
+            "type": "quantitative",
+            "title": "International share",
+            "format": ".0%"
+          }
+        ]
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.group === 'Domestic' && datum.w > 0.03"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "angle": 270,
+        "align": "left",
+        "baseline": "middle",
+        "dx": 6,
+        "fontWeight": 600,
+        "color": "#0b0b0b"
+      },
+      "encoding": {
+        "x": {
+          "field": "xm",
+          "type": "quantitative"
+        },
+        "y": {
+          "datum": 0
+        },
+        "text": {
+          "field": "field"
+        }
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.group === 'International' && datum.w > 0.05"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "baseline": "top",
+        "dy": 6,
+        "fontWeight": 700,
+        "color": "#ffffff"
+      },
+      "encoding": {
+        "x": {
+          "field": "xm",
+          "type": "quantitative"
+        },
+        "y": {
+          "datum": 1
+        },
+        "text": {
+          "field": "intlShare",
+          "type": "quantitative",
+          "format": ".0%"
+        }
+      }
+    }
+  ],
+  "config": {
+    "background": "#fcfcfb",
+    "font": "'Source Sans 3', Helvetica, Arial, sans-serif",
+    "padding": 12,
+    "view": {
+      "stroke": null
+    },
+    "title": {
+      "anchor": "start",
+      "fontSize": 19,
+      "fontWeight": 700,
+      "color": "#0b0b0b",
+      "subtitleFontSize": 13,
+      "subtitleColor": "#52514e",
+      "subtitlePadding": 6,
+      "offset": 16
+    },
+    "axis": {
+      "labelColor": "#52514e",
+      "labelFontSize": 12,
+      "titleColor": "#52514e",
+      "titleFontSize": 12,
+      "titleFontWeight": 400,
+      "gridColor": "#e1e0d9",
+      "domainColor": "#c3c2b7",
+      "tickColor": "#c3c2b7"
+    },
+    "legend": {
+      "labelColor": "#52514e",
+      "labelFontSize": 12,
+      "titleColor": "#52514e",
+      "titleFontSize": 12,
+      "titleFontWeight": 600
+    },
+    "header": {
+      "labelColor": "#0b0b0b",
+      "labelFontSize": 13,
+      "labelFontWeight": 600,
+      "titleFontSize": 0
+    },
+    "text": {
+      "fontSize": 12,
+      "color": "#52514e"
+    },
+    "line": {
+      "strokeWidth": 2
+    }
+  }
+}

@@ -1,0 +1,328 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Chart 7 (slope graph). Students enrolled in each broad field, 2015 vs 2024, with % change. Source: Department of Education, Higher Education Statistics 2024, Summary Time Series, Table 2.",
+  "title": {
+    "text": "Change in Enrolments by Field, 2015 vs 2024",
+    "subtitle": "Students enrolled in each field (all students, all levels) · hover over a line to highlight it"
+  },
+  "width": 210,
+  "height": 520,
+  "data": {
+    "url": "data/T2_all_student_enrolments.csv"
+  },
+  "transform": [
+    {
+      "filter": "datum.Group === 'Broad Field of Education'"
+    },
+    {
+      "lookup": "Category",
+      "from": {
+        "data": {
+          "values": [
+            {
+              "official": "Management and Commerce",
+              "field": "Business",
+              "nl": 0,
+              "nr": 0
+            },
+            {
+              "official": "Society and Culture",
+              "field": "Society & Culture",
+              "nl": 0,
+              "nr": 0
+            },
+            {
+              "official": "Health",
+              "field": "Health",
+              "nl": 0,
+              "nr": 0
+            },
+            {
+              "official": "Information Technology",
+              "field": "IT",
+              "nl": 0,
+              "nr": -5
+            },
+            {
+              "official": "Education",
+              "field": "Education",
+              "nl": 0,
+              "nr": 4
+            },
+            {
+              "official": "Natural and Physical Sciences",
+              "field": "Science",
+              "nl": -5,
+              "nr": -3
+            },
+            {
+              "official": "Engineering and Related Technologies",
+              "field": "Engineering",
+              "nl": 5,
+              "nr": 4
+            },
+            {
+              "official": "Creative Arts",
+              "field": "Creative Arts",
+              "nl": 0,
+              "nr": 0
+            },
+            {
+              "official": "Architecture and Building",
+              "field": "Architecture",
+              "nl": 0,
+              "nr": 0
+            },
+            {
+              "official": "Agriculture, Environmental and Related Studies",
+              "field": "Agriculture",
+              "nl": 0,
+              "nr": 0
+            }
+          ]
+        },
+        "key": "official",
+        "fields": [
+          "field",
+          "nl",
+          "nr"
+        ]
+      }
+    },
+    {
+      "filter": "isValid(datum.field)"
+    },
+    {
+      "calculate": "toNumber(datum['2024']) / toNumber(datum['2015']) - 1",
+      "as": "growth"
+    },
+    {
+      "fold": [
+        "2015",
+        "2024"
+      ],
+      "as": [
+        "year",
+        "students"
+      ]
+    },
+    {
+      "calculate": "toNumber(datum.students)",
+      "as": "students"
+    },
+    {
+      "calculate": "datum.students - (datum.year === '2015' ? datum.nl : datum.nr) * 750",
+      "as": "ylab"
+    }
+  ],
+  "encoding": {
+    "x": {
+      "field": "year",
+      "type": "ordinal",
+      "title": null,
+      "scale": {
+        "type": "point",
+        "padding": 0
+      },
+      "axis": {
+        "orient": "top",
+        "domain": false,
+        "ticks": false,
+        "labelFontWeight": 700,
+        "labelAngle": 0,
+        "labelFontSize": 13,
+        "labelColor": "#0b0b0b",
+        "labelPadding": 10
+      }
+    },
+    "y": {
+      "field": "students",
+      "type": "quantitative",
+      "axis": null,
+      "scale": {
+        "domain": [
+          0,
+          390000
+        ]
+      }
+    },
+    "opacity": {
+      "condition": {
+        "param": "hover",
+        "value": 1
+      },
+      "value": 0.18
+    }
+  },
+  "layer": [
+    {
+      "mark": {
+        "type": "line",
+        "strokeWidth": 2.5,
+        "color": "#2a78d6"
+      },
+      "encoding": {
+        "detail": {
+          "field": "field"
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "circle",
+        "size": 44,
+        "color": "#2a78d6"
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.year === '2015'"
+        },
+        {
+          "calculate": "datum.field + '  ' + format(datum.students, '.3~s')",
+          "as": "lab"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "right",
+        "dx": -9,
+        "baseline": "middle",
+        "color": "#0b0b0b"
+      },
+      "encoding": {
+        "text": {
+          "field": "lab"
+        },
+        "y": {
+          "field": "ylab",
+          "type": "quantitative"
+        }
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.year === '2024'"
+        },
+        {
+          "calculate": "format(datum.students, '.3~s') + '  ' + datum.field + '  (' + format(datum.growth, abs(datum.growth) < 0.01 ? '+.1%' : '+.0%') + ')'",
+          "as": "lab"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "dx": 9,
+        "baseline": "middle",
+        "color": "#0b0b0b"
+      },
+      "encoding": {
+        "text": {
+          "field": "lab"
+        },
+        "y": {
+          "field": "ylab",
+          "type": "quantitative"
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "circle",
+        "size": 180,
+        "opacity": 0
+      },
+      "params": [
+        {
+          "name": "hover",
+          "select": {
+            "type": "point",
+            "fields": [
+              "field"
+            ],
+            "on": "pointerover",
+            "clear": "pointerout",
+            "nearest": true
+          }
+        }
+      ],
+      "encoding": {
+        "opacity": {
+          "value": 0
+        },
+        "tooltip": [
+          {
+            "field": "field",
+            "title": "Field"
+          },
+          {
+            "field": "year",
+            "title": "Year"
+          },
+          {
+            "field": "students",
+            "type": "quantitative",
+            "title": "Students",
+            "format": ","
+          },
+          {
+            "field": "growth",
+            "type": "quantitative",
+            "title": "Change 2015–2024",
+            "format": "+.1%"
+          }
+        ]
+      }
+    }
+  ],
+  "config": {
+    "background": "#fcfcfb",
+    "font": "'Source Sans 3', Helvetica, Arial, sans-serif",
+    "padding": 12,
+    "view": {
+      "stroke": null
+    },
+    "title": {
+      "anchor": "start",
+      "fontSize": 19,
+      "fontWeight": 700,
+      "color": "#0b0b0b",
+      "subtitleFontSize": 13,
+      "subtitleColor": "#52514e",
+      "subtitlePadding": 6,
+      "offset": 16
+    },
+    "axis": {
+      "labelColor": "#52514e",
+      "labelFontSize": 12,
+      "titleColor": "#52514e",
+      "titleFontSize": 12,
+      "titleFontWeight": 400,
+      "gridColor": "#e1e0d9",
+      "domainColor": "#c3c2b7",
+      "tickColor": "#c3c2b7"
+    },
+    "legend": {
+      "labelColor": "#52514e",
+      "labelFontSize": 12,
+      "titleColor": "#52514e",
+      "titleFontSize": 12,
+      "titleFontWeight": 600
+    },
+    "header": {
+      "labelColor": "#0b0b0b",
+      "labelFontSize": 13,
+      "labelFontWeight": 600,
+      "titleFontSize": 0
+    },
+    "text": {
+      "fontSize": 12,
+      "color": "#52514e"
+    },
+    "line": {
+      "strokeWidth": 2
+    }
+  }
+}
