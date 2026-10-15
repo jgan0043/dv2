@@ -1,0 +1,1358 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Chart 11 (flow map). Students whose permanent home is in one state but who study with a university or other provider based in another state, 2024 (includes online study). Source: Department of Education, Higher Education Statistics 2024, Section 2 All Students, Table 2.4. Boundaries: ABS ASGS states, simplified.",
+  "title": {
+    "text": "Students Studying with a University in Another State, 2024",
+    "subtitle": [
+      "Arrows run from students' home state to the state of their university; thicker arrow = more students",
+      "Includes students who moved and students studying online · use the menu below the map to choose a state"
+    ]
+  },
+  "width": 500,
+  "height": 430,
+  "projection": {
+    "type": "conicEqualArea",
+    "parallels": [
+      -18,
+      -36
+    ],
+    "rotate": [
+      -134,
+      0
+    ]
+  },
+  "params": [
+    {
+      "name": "destination",
+      "value": "New South Wales",
+      "bind": {
+        "input": "select",
+        "name": "Show students studying in: ",
+        "options": [
+          "New South Wales",
+          "Victoria",
+          "Queensland",
+          "South Australia",
+          "Western Australia",
+          "Tasmania",
+          "Northern Territory",
+          "Australian Capital Territory"
+        ]
+      }
+    }
+  ],
+  "layer": [
+    {
+      "data": {
+        "url": "data/australia_states.topo.json",
+        "format": {
+          "type": "topojson",
+          "feature": "states"
+        }
+      },
+      "mark": {
+        "type": "geoshape",
+        "fill": "#ecebe5",
+        "stroke": "#fcfcfb",
+        "strokeWidth": 1.5
+      }
+    },
+    {
+      "data": {
+        "url": "data/australia_states.topo.json",
+        "format": {
+          "type": "topojson",
+          "feature": "states"
+        }
+      },
+      "transform": [
+        {
+          "filter": "datum.properties.state === destination"
+        }
+      ],
+      "mark": {
+        "type": "geoshape",
+        "fill": "#b7d3f6",
+        "stroke": "#fcfcfb",
+        "strokeWidth": 1.5
+      }
+    },
+    {
+      "data": {
+        "url": "data/2-4_home_state_vs_study_state.csv"
+      },
+      "transform": [
+        {
+          "lookup": "State of Permanent Home Residence",
+          "from": {
+            "data": {
+              "values": [
+                {
+                  "State": "New South Wales",
+                  "lon": 151.21,
+                  "lat": -33.87,
+                  "llon": 152.9,
+                  "llat": -34.9,
+                  "align": "left"
+                },
+                {
+                  "State": "Victoria",
+                  "lon": 144.96,
+                  "lat": -37.81,
+                  "llon": 143.6,
+                  "llat": -39.5,
+                  "align": "right"
+                },
+                {
+                  "State": "Queensland",
+                  "lon": 153.03,
+                  "lat": -27.47,
+                  "llon": 154.2,
+                  "llat": -26.4,
+                  "align": "left"
+                },
+                {
+                  "State": "South Australia",
+                  "lon": 138.6,
+                  "lat": -34.93,
+                  "llon": 137.4,
+                  "llat": -36.9,
+                  "align": "right"
+                },
+                {
+                  "State": "Western Australia",
+                  "lon": 115.86,
+                  "lat": -31.95,
+                  "llon": 116.4,
+                  "llat": -34.4,
+                  "align": "left"
+                },
+                {
+                  "State": "Tasmania",
+                  "lon": 147.33,
+                  "lat": -42.88,
+                  "llon": 148.6,
+                  "llat": -43.4,
+                  "align": "left"
+                },
+                {
+                  "State": "Northern Territory",
+                  "lon": 130.84,
+                  "lat": -12.46,
+                  "llon": 130.84,
+                  "llat": -10.4,
+                  "align": "center"
+                },
+                {
+                  "State": "Australian Capital Territory",
+                  "lon": 149.13,
+                  "lat": -35.28,
+                  "llon": 151.6,
+                  "llat": -38.0,
+                  "align": "left"
+                }
+              ]
+            },
+            "key": "State",
+            "fields": [
+              "lon",
+              "lat",
+              "llon",
+              "llat",
+              "align"
+            ]
+          },
+          "as": [
+            "lon1",
+            "lat1",
+            "llon",
+            "llat",
+            "align"
+          ]
+        },
+        {
+          "filter": "isValid(datum.lon1)"
+        },
+        {
+          "fold": [
+            "New South Wales",
+            "Victoria",
+            "Queensland",
+            "South Australia",
+            "Western Australia",
+            "Tasmania",
+            "Northern Territory",
+            "Australian Capital Territory"
+          ],
+          "as": [
+            "study",
+            "students"
+          ]
+        },
+        {
+          "calculate": "toNumber(datum.students)",
+          "as": "students"
+        },
+        {
+          "filter": "datum.study === destination && datum['State of Permanent Home Residence'] !== datum.study && isValid(datum.students) && datum.students > 0"
+        },
+        {
+          "lookup": "study",
+          "from": {
+            "data": {
+              "values": [
+                {
+                  "State": "New South Wales",
+                  "lon": 151.21,
+                  "lat": -33.87,
+                  "llon": 152.9,
+                  "llat": -34.9,
+                  "align": "left"
+                },
+                {
+                  "State": "Victoria",
+                  "lon": 144.96,
+                  "lat": -37.81,
+                  "llon": 143.6,
+                  "llat": -39.5,
+                  "align": "right"
+                },
+                {
+                  "State": "Queensland",
+                  "lon": 153.03,
+                  "lat": -27.47,
+                  "llon": 154.2,
+                  "llat": -26.4,
+                  "align": "left"
+                },
+                {
+                  "State": "South Australia",
+                  "lon": 138.6,
+                  "lat": -34.93,
+                  "llon": 137.4,
+                  "llat": -36.9,
+                  "align": "right"
+                },
+                {
+                  "State": "Western Australia",
+                  "lon": 115.86,
+                  "lat": -31.95,
+                  "llon": 116.4,
+                  "llat": -34.4,
+                  "align": "left"
+                },
+                {
+                  "State": "Tasmania",
+                  "lon": 147.33,
+                  "lat": -42.88,
+                  "llon": 148.6,
+                  "llat": -43.4,
+                  "align": "left"
+                },
+                {
+                  "State": "Northern Territory",
+                  "lon": 130.84,
+                  "lat": -12.46,
+                  "llon": 130.84,
+                  "llat": -10.4,
+                  "align": "center"
+                },
+                {
+                  "State": "Australian Capital Territory",
+                  "lon": 149.13,
+                  "lat": -35.28,
+                  "llon": 151.6,
+                  "llat": -38.0,
+                  "align": "left"
+                }
+              ]
+            },
+            "key": "State",
+            "fields": [
+              "lon",
+              "lat"
+            ]
+          },
+          "as": [
+            "lon2",
+            "lat2"
+          ]
+        },
+        {
+          "calculate": "datum.lon2 - datum.lon1",
+          "as": "dx"
+        },
+        {
+          "calculate": "datum.lat2 - datum.lat1",
+          "as": "dy"
+        },
+        {
+          "calculate": "sqrt(datum.dx * datum.dx + datum.dy * datum.dy)",
+          "as": "len"
+        },
+        {
+          "calculate": "(datum.lon1 + datum.lon2) / 2 - datum.dy * 0.18",
+          "as": "cx"
+        },
+        {
+          "calculate": "(datum.lat1 + datum.lat2) / 2 + datum.dx * 0.18",
+          "as": "cy"
+        },
+        {
+          "calculate": "sqrt(pow(datum.lon2 - datum.cx, 2) + pow(datum.lat2 - datum.cy, 2))",
+          "as": "d2"
+        },
+        {
+          "calculate": "datum.lon2 - (datum.lon2 - datum.cx) / datum.d2 * 0.9",
+          "as": "ex"
+        },
+        {
+          "calculate": "datum.lat2 - (datum.lat2 - datum.cy) / datum.d2 * 0.9",
+          "as": "ey"
+        },
+        {
+          "calculate": "atan2((datum.ex - datum.cx) * cos(datum.ey * PI / 180), datum.ey - datum.cy) * 180 / PI",
+          "as": "bearing"
+        },
+        {
+          "calculate": "60 + datum.students / 22000 * 300",
+          "as": "arrow"
+        },
+        {
+          "calculate": "datum['State of Permanent Home Residence']",
+          "as": "home"
+        }
+      ],
+      "layer": [
+        {
+          "transform": [
+            {
+              "calculate": "[0, 1, 2]",
+              "as": "step"
+            },
+            {
+              "flatten": [
+                "step"
+              ]
+            },
+            {
+              "calculate": "datum.step === 0 ? datum.lon1 : datum.step === 1 ? datum.cx : datum.ex",
+              "as": "px"
+            },
+            {
+              "calculate": "datum.step === 0 ? datum.lat1 : datum.step === 1 ? datum.cy : datum.ey",
+              "as": "py"
+            }
+          ],
+          "mark": {
+            "type": "line",
+            "interpolate": "basis",
+            "color": "#184f95",
+            "opacity": 0.85,
+            "strokeCap": "round"
+          },
+          "encoding": {
+            "longitude": {
+              "field": "px",
+              "type": "quantitative"
+            },
+            "latitude": {
+              "field": "py",
+              "type": "quantitative"
+            },
+            "detail": {
+              "field": "home"
+            },
+            "order": {
+              "field": "step",
+              "type": "quantitative"
+            },
+            "size": {
+              "field": "students",
+              "type": "quantitative",
+              "title": "Students",
+              "scale": {
+                "domain": [
+                  0,
+                  22000
+                ],
+                "range": [
+                  1,
+                  10
+                ]
+              },
+              "legend": null
+            },
+            "tooltip": [
+              {
+                "field": "home",
+                "title": "Home state"
+              },
+              {
+                "field": "study",
+                "title": "Studying in"
+              },
+              {
+                "field": "students",
+                "type": "quantitative",
+                "title": "Students",
+                "format": ","
+              }
+            ]
+          }
+        },
+        {
+          "mark": {
+            "type": "point",
+            "shape": "triangle-up",
+            "filled": true,
+            "color": "#184f95",
+            "opacity": 1
+          },
+          "encoding": {
+            "longitude": {
+              "field": "ex",
+              "type": "quantitative"
+            },
+            "latitude": {
+              "field": "ey",
+              "type": "quantitative"
+            },
+            "angle": {
+              "field": "bearing",
+              "type": "quantitative",
+              "scale": null
+            },
+            "size": {
+              "field": "arrow",
+              "type": "quantitative",
+              "scale": null
+            }
+          }
+        },
+        {
+          "transform": [
+            {
+              "filter": "datum.align === 'left'"
+            },
+            {
+              "calculate": "[datum['State of Permanent Home Residence'], format(datum.students, ',') + ' students']",
+              "as": "lab"
+            }
+          ],
+          "mark": {
+            "type": "text",
+            "fontSize": 11,
+            "lineHeight": 13,
+            "align": "left",
+            "baseline": "middle",
+            "color": "#fcfcfb",
+            "stroke": "#fcfcfb",
+            "strokeWidth": 4,
+            "strokeJoin": "round"
+          },
+          "encoding": {
+            "longitude": {
+              "field": "llon",
+              "type": "quantitative"
+            },
+            "latitude": {
+              "field": "llat",
+              "type": "quantitative"
+            },
+            "text": {
+              "field": "lab"
+            }
+          }
+        },
+        {
+          "transform": [
+            {
+              "filter": "datum.align === 'left'"
+            },
+            {
+              "calculate": "[datum['State of Permanent Home Residence'], format(datum.students, ',') + ' students']",
+              "as": "lab"
+            }
+          ],
+          "mark": {
+            "type": "text",
+            "fontSize": 11,
+            "lineHeight": 13,
+            "align": "left",
+            "baseline": "middle",
+            "color": "#0b0b0b"
+          },
+          "encoding": {
+            "longitude": {
+              "field": "llon",
+              "type": "quantitative"
+            },
+            "latitude": {
+              "field": "llat",
+              "type": "quantitative"
+            },
+            "text": {
+              "field": "lab"
+            }
+          }
+        },
+        {
+          "transform": [
+            {
+              "filter": "datum.align === 'right'"
+            },
+            {
+              "calculate": "[datum['State of Permanent Home Residence'], format(datum.students, ',') + ' students']",
+              "as": "lab"
+            }
+          ],
+          "mark": {
+            "type": "text",
+            "fontSize": 11,
+            "lineHeight": 13,
+            "align": "right",
+            "baseline": "middle",
+            "color": "#fcfcfb",
+            "stroke": "#fcfcfb",
+            "strokeWidth": 4,
+            "strokeJoin": "round"
+          },
+          "encoding": {
+            "longitude": {
+              "field": "llon",
+              "type": "quantitative"
+            },
+            "latitude": {
+              "field": "llat",
+              "type": "quantitative"
+            },
+            "text": {
+              "field": "lab"
+            }
+          }
+        },
+        {
+          "transform": [
+            {
+              "filter": "datum.align === 'right'"
+            },
+            {
+              "calculate": "[datum['State of Permanent Home Residence'], format(datum.students, ',') + ' students']",
+              "as": "lab"
+            }
+          ],
+          "mark": {
+            "type": "text",
+            "fontSize": 11,
+            "lineHeight": 13,
+            "align": "right",
+            "baseline": "middle",
+            "color": "#0b0b0b"
+          },
+          "encoding": {
+            "longitude": {
+              "field": "llon",
+              "type": "quantitative"
+            },
+            "latitude": {
+              "field": "llat",
+              "type": "quantitative"
+            },
+            "text": {
+              "field": "lab"
+            }
+          }
+        },
+        {
+          "transform": [
+            {
+              "filter": "datum.align === 'center'"
+            },
+            {
+              "calculate": "[datum['State of Permanent Home Residence'], format(datum.students, ',') + ' students']",
+              "as": "lab"
+            }
+          ],
+          "mark": {
+            "type": "text",
+            "fontSize": 11,
+            "lineHeight": 13,
+            "align": "center",
+            "baseline": "middle",
+            "color": "#fcfcfb",
+            "stroke": "#fcfcfb",
+            "strokeWidth": 4,
+            "strokeJoin": "round"
+          },
+          "encoding": {
+            "longitude": {
+              "field": "llon",
+              "type": "quantitative"
+            },
+            "latitude": {
+              "field": "llat",
+              "type": "quantitative"
+            },
+            "text": {
+              "field": "lab"
+            }
+          }
+        },
+        {
+          "transform": [
+            {
+              "filter": "datum.align === 'center'"
+            },
+            {
+              "calculate": "[datum['State of Permanent Home Residence'], format(datum.students, ',') + ' students']",
+              "as": "lab"
+            }
+          ],
+          "mark": {
+            "type": "text",
+            "fontSize": 11,
+            "lineHeight": 13,
+            "align": "center",
+            "baseline": "middle",
+            "color": "#0b0b0b"
+          },
+          "encoding": {
+            "longitude": {
+              "field": "llon",
+              "type": "quantitative"
+            },
+            "latitude": {
+              "field": "llat",
+              "type": "quantitative"
+            },
+            "text": {
+              "field": "lab"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "State": "New South Wales",
+            "lon": 151.21,
+            "lat": -33.87,
+            "llon": 152.9,
+            "llat": -34.9,
+            "align": "left"
+          },
+          {
+            "State": "Victoria",
+            "lon": 144.96,
+            "lat": -37.81,
+            "llon": 143.6,
+            "llat": -39.5,
+            "align": "right"
+          },
+          {
+            "State": "Queensland",
+            "lon": 153.03,
+            "lat": -27.47,
+            "llon": 154.2,
+            "llat": -26.4,
+            "align": "left"
+          },
+          {
+            "State": "South Australia",
+            "lon": 138.6,
+            "lat": -34.93,
+            "llon": 137.4,
+            "llat": -36.9,
+            "align": "right"
+          },
+          {
+            "State": "Western Australia",
+            "lon": 115.86,
+            "lat": -31.95,
+            "llon": 116.4,
+            "llat": -34.4,
+            "align": "left"
+          },
+          {
+            "State": "Tasmania",
+            "lon": 147.33,
+            "lat": -42.88,
+            "llon": 148.6,
+            "llat": -43.4,
+            "align": "left"
+          },
+          {
+            "State": "Northern Territory",
+            "lon": 130.84,
+            "lat": -12.46,
+            "llon": 130.84,
+            "llat": -10.4,
+            "align": "center"
+          },
+          {
+            "State": "Australian Capital Territory",
+            "lon": 149.13,
+            "lat": -35.28,
+            "llon": 151.6,
+            "llat": -38.0,
+            "align": "left"
+          }
+        ]
+      },
+      "mark": {
+        "type": "circle",
+        "size": 40,
+        "color": "#fcfcfb",
+        "stroke": "#52514e",
+        "strokeWidth": 1.5,
+        "opacity": 1
+      },
+      "encoding": {
+        "longitude": {
+          "field": "lon",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "lat",
+          "type": "quantitative"
+        }
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "State": "New South Wales",
+            "lon": 151.21,
+            "lat": -33.87,
+            "llon": 152.9,
+            "llat": -34.9,
+            "align": "left"
+          },
+          {
+            "State": "Victoria",
+            "lon": 144.96,
+            "lat": -37.81,
+            "llon": 143.6,
+            "llat": -39.5,
+            "align": "right"
+          },
+          {
+            "State": "Queensland",
+            "lon": 153.03,
+            "lat": -27.47,
+            "llon": 154.2,
+            "llat": -26.4,
+            "align": "left"
+          },
+          {
+            "State": "South Australia",
+            "lon": 138.6,
+            "lat": -34.93,
+            "llon": 137.4,
+            "llat": -36.9,
+            "align": "right"
+          },
+          {
+            "State": "Western Australia",
+            "lon": 115.86,
+            "lat": -31.95,
+            "llon": 116.4,
+            "llat": -34.4,
+            "align": "left"
+          },
+          {
+            "State": "Tasmania",
+            "lon": 147.33,
+            "lat": -42.88,
+            "llon": 148.6,
+            "llat": -43.4,
+            "align": "left"
+          },
+          {
+            "State": "Northern Territory",
+            "lon": 130.84,
+            "lat": -12.46,
+            "llon": 130.84,
+            "llat": -10.4,
+            "align": "center"
+          },
+          {
+            "State": "Australian Capital Territory",
+            "lon": 149.13,
+            "lat": -35.28,
+            "llon": 151.6,
+            "llat": -38.0,
+            "align": "left"
+          }
+        ]
+      },
+      "transform": [
+        {
+          "filter": "datum.State === destination && datum.align === 'left'"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "fontSize": 12,
+        "fontWeight": 700,
+        "baseline": "middle",
+        "align": "left",
+        "color": "#fcfcfb",
+        "stroke": "#fcfcfb",
+        "strokeWidth": 4,
+        "strokeJoin": "round"
+      },
+      "encoding": {
+        "longitude": {
+          "field": "llon",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "llat",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "State"
+        }
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "State": "New South Wales",
+            "lon": 151.21,
+            "lat": -33.87,
+            "llon": 152.9,
+            "llat": -34.9,
+            "align": "left"
+          },
+          {
+            "State": "Victoria",
+            "lon": 144.96,
+            "lat": -37.81,
+            "llon": 143.6,
+            "llat": -39.5,
+            "align": "right"
+          },
+          {
+            "State": "Queensland",
+            "lon": 153.03,
+            "lat": -27.47,
+            "llon": 154.2,
+            "llat": -26.4,
+            "align": "left"
+          },
+          {
+            "State": "South Australia",
+            "lon": 138.6,
+            "lat": -34.93,
+            "llon": 137.4,
+            "llat": -36.9,
+            "align": "right"
+          },
+          {
+            "State": "Western Australia",
+            "lon": 115.86,
+            "lat": -31.95,
+            "llon": 116.4,
+            "llat": -34.4,
+            "align": "left"
+          },
+          {
+            "State": "Tasmania",
+            "lon": 147.33,
+            "lat": -42.88,
+            "llon": 148.6,
+            "llat": -43.4,
+            "align": "left"
+          },
+          {
+            "State": "Northern Territory",
+            "lon": 130.84,
+            "lat": -12.46,
+            "llon": 130.84,
+            "llat": -10.4,
+            "align": "center"
+          },
+          {
+            "State": "Australian Capital Territory",
+            "lon": 149.13,
+            "lat": -35.28,
+            "llon": 151.6,
+            "llat": -38.0,
+            "align": "left"
+          }
+        ]
+      },
+      "transform": [
+        {
+          "filter": "datum.State === destination && datum.align === 'left'"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "fontSize": 12,
+        "fontWeight": 700,
+        "baseline": "middle",
+        "align": "left",
+        "color": "#184f95"
+      },
+      "encoding": {
+        "longitude": {
+          "field": "llon",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "llat",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "State"
+        }
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "State": "New South Wales",
+            "lon": 151.21,
+            "lat": -33.87,
+            "llon": 152.9,
+            "llat": -34.9,
+            "align": "left"
+          },
+          {
+            "State": "Victoria",
+            "lon": 144.96,
+            "lat": -37.81,
+            "llon": 143.6,
+            "llat": -39.5,
+            "align": "right"
+          },
+          {
+            "State": "Queensland",
+            "lon": 153.03,
+            "lat": -27.47,
+            "llon": 154.2,
+            "llat": -26.4,
+            "align": "left"
+          },
+          {
+            "State": "South Australia",
+            "lon": 138.6,
+            "lat": -34.93,
+            "llon": 137.4,
+            "llat": -36.9,
+            "align": "right"
+          },
+          {
+            "State": "Western Australia",
+            "lon": 115.86,
+            "lat": -31.95,
+            "llon": 116.4,
+            "llat": -34.4,
+            "align": "left"
+          },
+          {
+            "State": "Tasmania",
+            "lon": 147.33,
+            "lat": -42.88,
+            "llon": 148.6,
+            "llat": -43.4,
+            "align": "left"
+          },
+          {
+            "State": "Northern Territory",
+            "lon": 130.84,
+            "lat": -12.46,
+            "llon": 130.84,
+            "llat": -10.4,
+            "align": "center"
+          },
+          {
+            "State": "Australian Capital Territory",
+            "lon": 149.13,
+            "lat": -35.28,
+            "llon": 151.6,
+            "llat": -38.0,
+            "align": "left"
+          }
+        ]
+      },
+      "transform": [
+        {
+          "filter": "datum.State === destination && datum.align === 'right'"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "fontSize": 12,
+        "fontWeight": 700,
+        "baseline": "middle",
+        "align": "right",
+        "color": "#fcfcfb",
+        "stroke": "#fcfcfb",
+        "strokeWidth": 4,
+        "strokeJoin": "round"
+      },
+      "encoding": {
+        "longitude": {
+          "field": "llon",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "llat",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "State"
+        }
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "State": "New South Wales",
+            "lon": 151.21,
+            "lat": -33.87,
+            "llon": 152.9,
+            "llat": -34.9,
+            "align": "left"
+          },
+          {
+            "State": "Victoria",
+            "lon": 144.96,
+            "lat": -37.81,
+            "llon": 143.6,
+            "llat": -39.5,
+            "align": "right"
+          },
+          {
+            "State": "Queensland",
+            "lon": 153.03,
+            "lat": -27.47,
+            "llon": 154.2,
+            "llat": -26.4,
+            "align": "left"
+          },
+          {
+            "State": "South Australia",
+            "lon": 138.6,
+            "lat": -34.93,
+            "llon": 137.4,
+            "llat": -36.9,
+            "align": "right"
+          },
+          {
+            "State": "Western Australia",
+            "lon": 115.86,
+            "lat": -31.95,
+            "llon": 116.4,
+            "llat": -34.4,
+            "align": "left"
+          },
+          {
+            "State": "Tasmania",
+            "lon": 147.33,
+            "lat": -42.88,
+            "llon": 148.6,
+            "llat": -43.4,
+            "align": "left"
+          },
+          {
+            "State": "Northern Territory",
+            "lon": 130.84,
+            "lat": -12.46,
+            "llon": 130.84,
+            "llat": -10.4,
+            "align": "center"
+          },
+          {
+            "State": "Australian Capital Territory",
+            "lon": 149.13,
+            "lat": -35.28,
+            "llon": 151.6,
+            "llat": -38.0,
+            "align": "left"
+          }
+        ]
+      },
+      "transform": [
+        {
+          "filter": "datum.State === destination && datum.align === 'right'"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "fontSize": 12,
+        "fontWeight": 700,
+        "baseline": "middle",
+        "align": "right",
+        "color": "#184f95"
+      },
+      "encoding": {
+        "longitude": {
+          "field": "llon",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "llat",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "State"
+        }
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "State": "New South Wales",
+            "lon": 151.21,
+            "lat": -33.87,
+            "llon": 152.9,
+            "llat": -34.9,
+            "align": "left"
+          },
+          {
+            "State": "Victoria",
+            "lon": 144.96,
+            "lat": -37.81,
+            "llon": 143.6,
+            "llat": -39.5,
+            "align": "right"
+          },
+          {
+            "State": "Queensland",
+            "lon": 153.03,
+            "lat": -27.47,
+            "llon": 154.2,
+            "llat": -26.4,
+            "align": "left"
+          },
+          {
+            "State": "South Australia",
+            "lon": 138.6,
+            "lat": -34.93,
+            "llon": 137.4,
+            "llat": -36.9,
+            "align": "right"
+          },
+          {
+            "State": "Western Australia",
+            "lon": 115.86,
+            "lat": -31.95,
+            "llon": 116.4,
+            "llat": -34.4,
+            "align": "left"
+          },
+          {
+            "State": "Tasmania",
+            "lon": 147.33,
+            "lat": -42.88,
+            "llon": 148.6,
+            "llat": -43.4,
+            "align": "left"
+          },
+          {
+            "State": "Northern Territory",
+            "lon": 130.84,
+            "lat": -12.46,
+            "llon": 130.84,
+            "llat": -10.4,
+            "align": "center"
+          },
+          {
+            "State": "Australian Capital Territory",
+            "lon": 149.13,
+            "lat": -35.28,
+            "llon": 151.6,
+            "llat": -38.0,
+            "align": "left"
+          }
+        ]
+      },
+      "transform": [
+        {
+          "filter": "datum.State === destination && datum.align === 'center'"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "fontSize": 12,
+        "fontWeight": 700,
+        "baseline": "middle",
+        "align": "center",
+        "color": "#fcfcfb",
+        "stroke": "#fcfcfb",
+        "strokeWidth": 4,
+        "strokeJoin": "round"
+      },
+      "encoding": {
+        "longitude": {
+          "field": "llon",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "llat",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "State"
+        }
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "State": "New South Wales",
+            "lon": 151.21,
+            "lat": -33.87,
+            "llon": 152.9,
+            "llat": -34.9,
+            "align": "left"
+          },
+          {
+            "State": "Victoria",
+            "lon": 144.96,
+            "lat": -37.81,
+            "llon": 143.6,
+            "llat": -39.5,
+            "align": "right"
+          },
+          {
+            "State": "Queensland",
+            "lon": 153.03,
+            "lat": -27.47,
+            "llon": 154.2,
+            "llat": -26.4,
+            "align": "left"
+          },
+          {
+            "State": "South Australia",
+            "lon": 138.6,
+            "lat": -34.93,
+            "llon": 137.4,
+            "llat": -36.9,
+            "align": "right"
+          },
+          {
+            "State": "Western Australia",
+            "lon": 115.86,
+            "lat": -31.95,
+            "llon": 116.4,
+            "llat": -34.4,
+            "align": "left"
+          },
+          {
+            "State": "Tasmania",
+            "lon": 147.33,
+            "lat": -42.88,
+            "llon": 148.6,
+            "llat": -43.4,
+            "align": "left"
+          },
+          {
+            "State": "Northern Territory",
+            "lon": 130.84,
+            "lat": -12.46,
+            "llon": 130.84,
+            "llat": -10.4,
+            "align": "center"
+          },
+          {
+            "State": "Australian Capital Territory",
+            "lon": 149.13,
+            "lat": -35.28,
+            "llon": 151.6,
+            "llat": -38.0,
+            "align": "left"
+          }
+        ]
+      },
+      "transform": [
+        {
+          "filter": "datum.State === destination && datum.align === 'center'"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "fontSize": 12,
+        "fontWeight": 700,
+        "baseline": "middle",
+        "align": "center",
+        "color": "#184f95"
+      },
+      "encoding": {
+        "longitude": {
+          "field": "llon",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "llat",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "State"
+        }
+      }
+    }
+  ],
+  "config": {
+    "background": "#fcfcfb",
+    "font": "'Source Sans 3', Helvetica, Arial, sans-serif",
+    "padding": 12,
+    "view": {
+      "stroke": null
+    },
+    "title": {
+      "anchor": "start",
+      "fontSize": 19,
+      "fontWeight": 700,
+      "color": "#0b0b0b",
+      "subtitleFontSize": 13,
+      "subtitleColor": "#52514e",
+      "subtitlePadding": 6,
+      "offset": 16
+    },
+    "axis": {
+      "labelColor": "#52514e",
+      "labelFontSize": 12,
+      "titleColor": "#52514e",
+      "titleFontSize": 12,
+      "titleFontWeight": 400,
+      "gridColor": "#e1e0d9",
+      "domainColor": "#c3c2b7",
+      "tickColor": "#c3c2b7"
+    },
+    "legend": {
+      "labelColor": "#52514e",
+      "labelFontSize": 12,
+      "titleColor": "#52514e",
+      "titleFontSize": 12,
+      "titleFontWeight": 600
+    },
+    "header": {
+      "labelColor": "#0b0b0b",
+      "labelFontSize": 13,
+      "labelFontWeight": 600,
+      "titleFontSize": 0
+    },
+    "text": {
+      "fontSize": 12,
+      "color": "#52514e"
+    },
+    "line": {
+      "strokeWidth": 2
+    }
+  }
+}

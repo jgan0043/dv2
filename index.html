@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Changing Course: What Australians Choose to Study</title>
   <meta name="description" content="An overview of university course preferences in Australia: what students study, how interests have changed, which fields have grown and how this differs across the country.">
-  <meta name="author" content="[Gan Jia Hui]">
+  <meta name="author" content="Gan Jia Hui">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,7 +24,7 @@
     <p class="kicker">University course preferences in Australia</p>
     <h1>Changing Course: What Australians Choose to Study</h1>
     <p class="standfirst">What do Australians want to study at university, and how has that changed? This page explores applications and enrolments across fields of study, from health and engineering to business, science and the arts.</p>
-    <p class="byline">By [Gan Jia Hui] · October 2026</p>
+    <p class="byline">By Gan Jia Hui · October 2026</p>
   </div>
 </header>
 
@@ -108,7 +108,7 @@
     <div class="section-head">
       <span class="section-num">Section 4</span>
       <h2>Across Australia</h2>
-      <p>How the mix of fields differs between states, territories and universities.</p>
+      <p>How the mix of fields differs between states, and where students travel to study.</p>
     </div>
 
     <div class="row">
@@ -122,7 +122,7 @@
     </div>
 
     <div class="row">
-      <p class="note">Most of the largest universities are in Sydney and Melbourne, and Health is the largest field at 16 of the 42.</p>
+      <p class="note">Many students study with a university in another state; New South Wales universities attract the most, especially from Queensland and Victoria. Use the menu to see any state.</p>
       <div class="chart" id="chart11"></div>
     </div>
   </section>
@@ -140,42 +140,18 @@
   <div class="wrap about-grid">
     <div>
       <h2>About this visualisation</h2>
-      <p>Author: [Gan Jia Hui]</p>
+      <p>Author: Gan Jia Hui</p>
       <p>Published: October 2026</p>
-      <p>Built with <a href="https://vega.github.io/vega-lite/">Vega-Lite</a> for FIT3179 Data Visualisation, Monash University.</p>
-
-      <h3>Field names used</h3>
-      <dl class="glossary">
-        <dt>Business</dt><dd>Management and Commerce</dd>
-        <dt>Science</dt><dd>Natural and Physical Sciences</dd>
-        <dt>IT</dt><dd>Information Technology</dd>
-        <dt>Engineering</dt><dd>Engineering and Related Technologies</dd>
-        <dt>Architecture</dt><dd>Architecture and Building</dd>
-        <dt>Agriculture</dt><dd>Agriculture, Environmental and Related Studies</dd>
-      </dl>
     </div>
 
     <div>
       <h3>Data sources</h3>
       <ol>
         <li>Australian Government Department of Education (2026). <em>Undergraduate Applications and Offers 2025 — Appendices</em>, Tables A4.1 and A6. CC BY 4.0. <a href="https://www.education.gov.au/undergraduate-applications-offers-and-acceptances-publications">education.gov.au/undergraduate-applications-offers-and-acceptances-publications</a></li>
-        <li>Australian Government Department of Education (2025). <em>Selected Higher Education Statistics — 2024 Student data</em>: Summary Time Series (Tables 2 and 4) and Section 2 All Students (Table 2.10). <a href="https://www.education.gov.au/higher-education-statistics/student-data/selected-higher-education-statistics-2024-student-data">education.gov.au/higher-education-statistics</a></li>
+        <li>Australian Government Department of Education (2025). <em>Selected Higher Education Statistics — 2024 Student data</em>: Summary Time Series (Tables 2 and 4) and Section 2 All Students (Tables 2.4 and 2.10). <a href="https://www.education.gov.au/higher-education-statistics/student-data/selected-higher-education-statistics-2024-student-data">education.gov.au/higher-education-statistics</a></li>
         <li>State and territory boundaries: Australian Bureau of Statistics, Australian Statistical Geography Standard, via <a href="https://github.com/rowanhogan/australian-states">github.com/rowanhogan/australian-states</a>, simplified with mapshaper.</li>
       </ol>
 
-      <h3>Notes on the data</h3>
-      <ul>
-        <li>Applicants (charts 3, 5 and 8) are domestic undergraduate applicants for semester 1 Commonwealth supported places, as at 15 May each year. They exclude international and postgraduate applicants. The way this data is collected changed in 2022.</li>
-        <li>City and regional applicants (chart 3) are the department's metropolitan and non-metropolitan applicants.</li>
-        <li>Students (all other charts) are all domestic and international students at all levels. Students in combined degrees are counted in both fields, so field shares are calculated from the sum of the ten broad fields.</li>
-        <li>State figures (charts 9 and 10) count students at universities and other providers based in each state, including students studying online. Providers that operate in several states are excluded. In chart 10, each circle is placed on its state and nudged slightly where neighbouring circles would touch.</li>
-        <li>University circles (chart 11) are placed at each university's main campus. The University of Notre Dame's 2024 figures may be affected by a cyber-security incident.</li>
-        <li>Society &amp; Culture includes law, psychology, languages and economics.</li>
-        <li>The original Excel files and the CSV tables used by each chart are in this site's <code>data</code> folder.</li>
-      </ul>
-
-      <h3>Use of AI</h3>
-      <p>Generative AI (Claude, Anthropic) was used to help plan the story, draft and check the chart code and text, and check figures against the source data. All data come from the sources listed above.</p>
     </div>
   </div>
 </footer>
@@ -186,7 +162,7 @@
     "01_students_by_field_waffle", "02_domestic_international_stacked", "03_city_regional_spine",
     "04_enrolments_small_multiples", "05_applicant_rank_bump", "06_enrolment_change_heatmap",
     "07_enrolment_slope", "08_applicant_change_diverging",
-    "09_field_share_choropleth", "10_state_dorling_cartogram", "11_university_symbol_map"
+    "09_field_share_choropleth", "10_state_dorling_cartogram", "11_interstate_flow_map"
   ];
   charts.forEach(function (name, i) {
     const id = "#chart" + String(i + 1).padStart(2, "0");
