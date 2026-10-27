@@ -3,7 +3,7 @@
 FIT3179 Data Visualisation 2 — a single scrolling web page built with Vega-Lite.
 Topic: University Course Preferences in Australia.
 
-Author: [Your Name] · October 2026
+Author: Gan Jia Hui · October 2026
 
 ## Folder structure
 
@@ -13,7 +13,6 @@ css/style.css       layout grid, typography and colours
 js/                 one Vega-Lite JSON specification per chart (01 … 11)
 data/               the CSV tables each chart reads, plus the map outline
 data/source/        the three original Excel files from the Department of Education (unchanged)
-sketch/             put your hand-drawn sketch PDF here (sketch.pdf)
 ```
 
 ## The 11 charts
@@ -64,17 +63,3 @@ Sources:
    https://www.education.gov.au/undergraduate-applications-offers-and-acceptances-publications
 2. Department of Education (2025). Selected Higher Education Statistics — 2024 Student data.
    https://www.education.gov.au/higher-education-statistics/student-data/selected-higher-education-statistics-2024-student-data
-
-## Viewing locally
-
-Charts load their data from files, so open the page through a local web server rather than double-clicking it:
-
-```
-python -m http.server 8000
-```
-
-then visit http://localhost:8000. On GitHub Pages it works as is.
-
-## Use of AI
-
-Generative AI (Claude, Anthropic) was used to check figures against the source data.
